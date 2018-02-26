@@ -367,7 +367,7 @@ public class DAA {
 		}
 
 		// calculate and return new target
-		daa_Wn = daa_Cumulative_Work.multiply(bi_600); // daa_elapsed_time
+		daa_Wn = (daa_Cumulative_Work.multiply(bi_600)).divide(daa_Elapsed_Time); // daa_elapsed_time
 		bigWork = (BigInteger.ONE).shiftLeft(256);
 		daa_Target = bigWork.divide(daa_Wn);
 		daa_Target = daa_Target.subtract(BigInteger.ONE);
