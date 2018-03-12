@@ -429,6 +429,30 @@ public class Bitcoin {
     }
     
     
+    public static String [] _CKD_pub (String cK, String c, String s) {
+    	
+       	// SECP256k1 ORDER
+    		Security.addProvider(new BouncyCastleProvider());
+    	    ECParameterSpec ecParameterSpec = ECNamedCurveTable.getParameterSpec(EC_GEN_PARAM_SPEC);
+            BigInteger order = ecParameterSpec.getN(); 
+    	 
+        String data = cK+s;
+        byte [] dataBytes=hexStringToByteArray(data);
+    	byte[] I = hmac_sha_512_bytes_from_hex(dataBytes,c); 
+    	String I_hex=bytesToHex(I);
+    	String I_hex32= I_hex.substring(0,64); // first 32 bytes (64 chars)
+    	BigInteger bi_I32= new BigInteger(I_hex32,16);  
+    	System.out.println("bi I32 is "+ bi_I32);
+
+    	ECPoint ecPoint = ecParameterSpec.getG(); 
+        System.out.println("ecPoint is "+ecPoint);
+        
+    	ecPoint = ecParameterSpec.getG().multiply(bi_I32); 
+        System.out.println("ecPoint is "+ecPoint);
+    	
+    	String retval[]=new String[2];
+    	return retval;
+    }
     
     
     
