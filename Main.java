@@ -52,13 +52,12 @@ public class Main {
    	 }
    		catch (NoSuchAlgorithmException e) {
 
-   		 System.out.println("ZZZZZZZZZZZZZZ"); 
+   		 System.out.println("NO SUCH ALGORITHM EXCEPTION"); 
    			   System.exit(0);	
 
    		}
      
-    
-        //list.stream().forEach(elem -> System.out.println( elem));
+     
         String testSeed;
         Seed mySeed = new Seed();
         testSeed= mySeed.generateSeed();
@@ -66,30 +65,30 @@ public class Main {
         
         testSeed="raw program because index dutch current minute leaf analyst conduct reject nephew";
        // System.out.println("ALTERNATE SEED FOR DEBUGGING");
-      //  System.out.println(testSeed);
+       //  System.out.println(testSeed);
         
         
         byte[] bip32root = MasterKeys.get_seed_from_mnemonic(testSeed);
         byte[] root512 = Bitcoin.get_root512_from_bip32root(bip32root);
-       // System.out.println("root 512 is "+Bitcoin.bytesToHex(root512));
+       System.out.println("root 512 is "+Bitcoin.bytesToHex(root512));
         byte[] kBytes = Arrays.copyOfRange(root512, 0, 32);
         byte[] cBytes = Arrays.copyOfRange(root512, 32, 64);
         String jonaldPubKey = Bitcoin.get_pubkey_from_secret(kBytes);
-       // System.out.println("pubkey");
-       // System.out.println(jonaldPubKey);
-        String serializedXprv = Bitcoin.serializeXprv(cBytes,  kBytes);
+        System.out.println("pubkey");
+       System.out.println(jonaldPubKey);
+       String serializedXprv = Bitcoin.serializeXprv(cBytes,  kBytes);
         byte[] cKbytes=Bitcoin.hexStringToByteArray(jonaldPubKey);
         String serializedXpub=Bitcoin.serializeXpub(cBytes, cKbytes );
         
           
         String final_xprv= Bitcoin.base_encode_58(serializedXprv);
-       // System.out.println ("final_xprv");
-        //System.out.println(final_xprv);
+       System.out.println ("final_xprv");
+        System.out.println(final_xprv);
         
           
         String final_xpub= Bitcoin.base_encode_58(serializedXpub);
-       //System.out.println ("final_xpub");
-       // System.out.println(final_xpub);
+       System.out.println ("final_xpub");
+        System.out.println(final_xpub);
         
         // Clean up comments and variable names before proceeding
         
@@ -102,7 +101,7 @@ public class Main {
 
         System.out.println("deserializedXprvPieces k "+ xprv_k );
 
-        
+        //String [] testmonk = _CKD_pub();
         
         
         
@@ -118,18 +117,28 @@ public class Main {
        // System.out.println(deserialized_xpub[2]);
 
        // System.out.println(deserialized_xpub[3]);
+        String my_c=deserialized_xpub[4];
+        String my_cK=deserialized_xpub[5];
+        
+        System.out.println(deserialized_xpub[4]);
 
-       // System.out.println(deserialized_xpub[4]);
-
-      //  System.out.println(deserialized_xpub[5]);
+        System.out.println("AAA");
+        System.out.println(deserialized_xpub[5]);
          
-        String[] fyookenstein = Bitcoin._CKD_priv(xprv_k,xprv_c,"00000000",false);
+        String[] mytest9 = Bitcoin._CKD_priv(xprv_k,xprv_c,"00000000",false);
         
        
         System.out.println("----");
-        System.out.println("fyookenstein "+fyookenstein[0]);
+        System.out.println("mytest9 "+mytest9[0]);
          
+        String [] test11=Bitcoin._CKD_pub(my_cK, my_c, "00000000");
 
+
+        BigInteger mytest10 = new BigInteger("79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",16);
+        System.out.println("mytest10 is "+mytest10);
+        mytest10 = new BigInteger("f1e086366d419faffe6a50add230708844e70ba61f5eb53bab0000103c196f0a",16);
+        System.out.println("mytest10 is "+mytest10);
+        
          // THIS IS WHERE WE 
        
        //MULTITHREAD
