@@ -64,8 +64,8 @@ public class Main {
         System.out.println(testSeed);
         
         testSeed="raw program because index dutch current minute leaf analyst conduct reject nephew";
-       // System.out.println("ALTERNATE SEED FOR DEBUGGING");
-       //  System.out.println(testSeed);
+         System.out.println("ALTERNATE SEED FOR DEBUGGING");
+         System.out.println(testSeed);
         
         
         byte[] bip32root = MasterKeys.get_seed_from_mnemonic(testSeed);
@@ -134,11 +134,7 @@ public class Main {
         String [] test11=Bitcoin._CKD_pub(my_cK, my_c, "00000000");
 
 
-        BigInteger mytest10 = new BigInteger("79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",16);
-        System.out.println("mytest10 is "+mytest10);
-        mytest10 = new BigInteger("f1e086366d419faffe6a50add230708844e70ba61f5eb53bab0000103c196f0a",16);
-        System.out.println("mytest10 is "+mytest10);
-        
+         
          // THIS IS WHERE WE 
        
        //MULTITHREAD

@@ -13,12 +13,16 @@ import java.util.Arrays;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider; 
+
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.crypto.DerivationFunction;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.spec.ECParameterSpec; 
 import org.bouncycastle.jce.spec.ECPublicKeySpec;
-import org.bouncycastle.math.ec.ECPoint;
-  
+import org.bouncycastle.math.ec.ECCurve;
+import org.bouncycastle.math.ec.ECFieldElement;
+import org.bouncycastle.math.ec.ECPoint; 
+import org.bouncycastle.math.raw.Mod;
 import org.bouncycastle.jce.interfaces.ECPublicKey;  
 import java.security.KeyFactory;  
 import java.security.Security;  
@@ -28,7 +32,14 @@ import java.util.ArrayList; import java.util.Arrays; import java.util.Collection
 public class Bitcoin {
 
 
-    private static final String EC_GEN_PARAM_SPEC = "secp256k1";
+	//These are constants in secp256k1
+	private static BigInteger curve_p= new BigInteger("115792089237316195423570985008687907853269984665640564039457584007908834671663");
+	private static BigInteger curve_a= new BigInteger("0");
+	private static BigInteger curve_b= new BigInteger("7");
+	// https://github.com/credentials/bouncycastle-ext/blob/master/src/org/bouncycastle/math/ec/pairing/ECCurveWithPairing.java
+	
+	
+	private static final String EC_GEN_PARAM_SPEC = "secp256k1";
     private static final String KEY_PAIR_GEN_ALGORITHM = "ECDSA"; 
     
 	public Bitcoin()
@@ -37,7 +48,95 @@ public class Bitcoin {
 		 
     } // end  func
 
+	
+	//https://stackoverflow.com/questions/4582277/biginteger-powbiginteger
+	public static BigInteger bigPow(BigInteger base, BigInteger exponent) {
+		  BigInteger result = BigInteger.ONE;
+		  while (exponent.signum() > 0) {
+		    if (exponent.testBit(0)) result = result.multiply(base);
+		    base = base.multiply(base);
+		    exponent = exponent.shiftRight(1);
+		  }
+		  return result;
+		}
+	
+	
+	
+	public static String [] ECC_YfromX(String x, boolean odd) {
+		
+		String [] retval=new String[2];
+		BigInteger bi_x = new BigInteger(x);
+		BigInteger bi_Mx,bi_My2,bi_My; 
+		BigInteger bi_4 = new BigInteger("4");
+		BigInteger bi_offset;
+		int offset;
+		boolean curve_contains_point=false;
+			
+		
+		// Bouncy Castle used to provide Crypto Libraries
+		Security.addProvider(new BouncyCastleProvider());
+		 		 
+		// Curve parameter 
+		ECParameterSpec ecParameterSpec = ECNamedCurveTable.getParameterSpec(EC_GEN_PARAM_SPEC);
+		
+		for (offset=0; offset <128; offset++) {
+            bi_offset=BigInteger.valueOf(offset);
+            
+            bi_Mx= bi_x.add(bi_offset);
+            // since a = 0 for secp256k1, we can simplify:
+            bi_My2 = ((bi_Mx.pow(3)).mod(curve_p)).add(curve_b.mod(curve_p));
+            bi_My= ( bigPow(bi_My2, ((curve_p.add(BigInteger.ONE)).divide(bi_4)))).mod(curve_p); 
+ 
+            curve_contains_point= curveContainsPoint(bi_Mx,bi_My);
+            
+            if (curve_contains_point) {
+                if (odd) {
+            	    retval[0]=bi_My.toString();
+            	    retval[1]=bi_offset.toString();
+                }
+                else {
+                    retval[0]=curve_p.subtract(bi_My).toString();
+                    retval[1]=bi_offset.toString();
+                    }
+             }
+            
+		return retval;
+		} //end for loop
+		 System.out.println("ECC_YfromX: No Y found"); 
+		 System.exit(0);	
+		return retval;
+	} //end function
 
+	
+	public static String [] ser_to_point(String Aser) {
+		
+		        String [] retval = new String[2];
+		        String x,y;
+		
+		        // SECP256k1 ORDER
+				Security.addProvider(new BouncyCastleProvider());
+			    ECParameterSpec ecParameterSpec = ECNamedCurveTable.getParameterSpec(EC_GEN_PARAM_SPEC);
+		        BigInteger order = ecParameterSpec.getN(); 
+		     
+		        if (Aser.substring(0,2).equals("04")) {
+		        	x=Aser.substring(1,33);
+		        	y=Aser.substring(33,Aser.length());
+		        	return retval;
+		        }
+	       	  
+		        boolean odd=false;
+		        if (Aser.substring(0,2)=="03" ) {
+		        	odd=true;
+		        }
+		        String Mx=Aser.substring(1,Aser.length());
+		        		
+		        String [] y_parts =ECC_YfromX(Mx,odd);
+		        retval[0]=Mx;
+		        retval[1]=y_parts[0];
+		        return retval;
+	}
+	
+	
 	public static String base_decode_58(String v) {
 		
 		System.out.println("input into decode is v "+v);
@@ -445,10 +544,15 @@ public class Bitcoin {
     	System.out.println("bi I32 is "+ bi_I32);
 
     	ECPoint ecPoint = ecParameterSpec.getG(); 
+    	 
+    	//ECFieldElement  blue=ecPoint.getAffineXCoord();
+        
+    	
+    	
+    	ecPoint = ecParameterSpec.getG().multiply(bi_I32).normalize(); 
         System.out.println("ecPoint is "+ecPoint);
         
-    	ecPoint = ecParameterSpec.getG().multiply(bi_I32); 
-        System.out.println("ecPoint is "+ecPoint);
+        //THIS IS WHERE I LEFT OFF
     	
     	String retval[]=new String[2];
     	return retval;
@@ -467,7 +571,7 @@ public class Bitcoin {
 		// Calculate the Public Key 
 	    ECParameterSpec ecParameterSpec = ECNamedCurveTable.getParameterSpec(EC_GEN_PARAM_SPEC);
         ECPoint ecPoint = ecParameterSpec.getG().multiply(secretExponent); 
-      
+        
         KeySpec publicKeySpec = new ECPublicKeySpec(ecPoint, ecParameterSpec);
         PublicKey publicKey=null;
         KeyFactory keyFactory=null;
@@ -590,7 +694,20 @@ public class Bitcoin {
 	    return mac_data;
 	}
 	
+	public static boolean curveContainsPoint(BigInteger x, BigInteger y) {
+
+		//expression is:  (y*y - ((x*x*x)   +  b))  %  p == 0
+		BigInteger expression;
+		BigInteger ySquared=y.multiply(y);
+		BigInteger xCubed = x.multiply(x).multiply(x);
+		expression= (  ySquared.subtract(xCubed.add(curve_b))).mod(curve_p);
+		if (expression.compareTo(BigInteger.ZERO)==0) {	return true;}
+		else { return false; }
+	}
 	
+	
+	
+
 	
 	public static String bytesToHex(byte[] bytes) {
 	    final  char[] hexArray = "0123456789ABCDEF".toCharArray();
