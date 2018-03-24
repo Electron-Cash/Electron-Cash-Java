@@ -374,6 +374,35 @@ public class Bitcoin {
 		out = bytesToHex(xBytes);
 		return out;
 	}
+	
+	 
+	public static String ripeHash(String x) {
+	       // PERFORM DOUBLE SHA256 HASH
+			String out=null;
+			MessageDigest digest=null;
+			MessageDigest digest2=null;
+			byte[] xBytes=null;
+					
+			try {
+				digest = MessageDigest.getInstance("SHA-256");
+				digest2 = MessageDigest.getInstance("RIPE-MD160");
+			    }
+			    catch (NoSuchAlgorithmException e) {
+			        System.out.println("NO SUCH ALGORITHM EXCEPTION"); 
+	       		    System.exit(0);	
+			    }
+			 
+	        xBytes=hexStringToByteArray(x);
+	        // --- Hash twice:   
+	        xBytes = digest.digest (xBytes);  
+
+	        xBytes = digest2.digest (xBytes);  
+	       	// end Double Hashing--------
+			out = bytesToHex(xBytes);
+			return out;
+		}
+	
+	
 
     public static String getHexPubKeyfromECkeys(ECPublicKey ecPublicKey, boolean compressed) {
         ECPoint ec = ecPublicKey.getQ();
@@ -529,35 +558,48 @@ public class Bitcoin {
     
     
     public static String [] _CKD_pub (String cK, String c, String s) {
-    	
-       	// SECP256k1 ORDER
-    		Security.addProvider(new BouncyCastleProvider());
-    	    ECParameterSpec ecParameterSpec = ECNamedCurveTable.getParameterSpec(EC_GEN_PARAM_SPEC);
-            BigInteger order = ecParameterSpec.getN(); 
-    	 
-        String data = cK+s;
-        byte [] dataBytes=hexStringToByteArray(data);
-    	byte[] I = hmac_sha_512_bytes_from_hex(dataBytes,c); 
-    	String I_hex=bytesToHex(I);
-    	String I_hex32= I_hex.substring(0,64); // first 32 bytes (64 chars)
-    	BigInteger bi_I32= new BigInteger(I_hex32,16);  
-    	System.out.println("bi I32 is "+ bi_I32);
 
-    	ECPoint ecPoint = ecParameterSpec.getG(); 
-    	 
-    	//ECFieldElement  blue=ecPoint.getAffineXCoord();
-        
-    	
-    	
-    	ecPoint = ecParameterSpec.getG().multiply(bi_I32).normalize(); 
-        System.out.println("ecPoint is "+ecPoint);
-        
-        //THIS IS WHERE I LEFT OFF
-    	
-    	String retval[]=new String[2];
-    	return retval;
-    }
-    
+        // SECP256k1 ORDER
+      Security.addProvider(new BouncyCastleProvider());
+      ECParameterSpec ecParameterSpec = ECNamedCurveTable.getParameterSpec(EC_GEN_PARAM_SPEC);
+    BigInteger order = ecParameterSpec.getN();
+
+    String data = cK+s;
+    byte [] dataBytes=hexStringToByteArray(data);
+      byte[] I = hmac_sha_512_bytes_from_hex(dataBytes,c);
+      String I_hex=bytesToHex(I);
+      String I_hex32= I_hex.substring(0,64); // first 32 bytes (64 chars)
+          BigInteger bi_I32= new BigInteger(I_hex32,16);
+          System.out.println("bi I32 is "+ bi_I32);
+
+      // ECPoint ecPoint; // = ecParameterSpec.getG();
+          byte [] cK_bytes = new BigInteger(cK,16).toByteArray();
+
+      ECPoint ecPoint = ecParameterSpec.getG().multiply(bi_I32).add(ecParameterSpec.getCurve().decodePoint(cK_bytes));
+          KeySpec publicKeySpec = new ECPublicKeySpec(ecPoint, ecParameterSpec);
+          PublicKey publicKey=null;
+          KeyFactory keyFactory=null;
+           try {
+                      keyFactory = KeyFactory.getInstance(KEY_PAIR_GEN_ALGORITHM);
+               }
+              catch (NoSuchAlgorithmException e) {
+                      System.out.println("NO SUCH ALGORITHM EXCEPTION");
+                      System.exit(0);
+                      }
+          try {
+                   publicKey = keyFactory.generatePublic(publicKeySpec);
+                   }
+                   catch (InvalidKeySpecException e) {
+                       System.out.println("INVALID KEY SPEC EXCEPTION");
+                       System.exit(0);
+                           }
+        ECPublicKey ecPublicKey = (ECPublicKey) publicKey;
+          String pubKeyHexFormat = getHexPubKeyfromECkeys(ecPublicKey,true);
+      String retval[]=new String[2];
+          retval[0] = pubKeyHexFormat;
+          retval[1] = I_hex.substring(64);
+          return retval;
+  }
     
     
 	public static String get_pubkey_from_secret(byte[] secret) {
@@ -754,12 +796,55 @@ public class Bitcoin {
 	 
 	 
 	
+	 
+	 
 	public static int unsignedToBytes(byte a)
 	{
 	    int b = a & 0xFF;
 	    return b;
 	}
+	
+	
+	public static String specialIntToHex(BigInteger i, int length) {
+		
+	String s = i.toString(16);	
+		 
+	
+	int generation=(2*length)-s.length();
+		
+	String leading_zeros=new String(new char[generation]).replace("\0", "0");
+	
+	String retval=leading_zeros+s;
+	
+	return retval;
+		
+	}
 	 
+	public static String var_int(int i) {
+		//https://en.bitcoin.it/wiki/Protocol_documentation#Variable_length_integer
+		//Returns Hex string.
+		
+		 
+		BigInteger bi =  BigInteger.valueOf(i);
+				
+				
+				
+		if (i<253 ) {
+			return specialIntToHex(bi,1);
+		}
+		
+		else if (i < 65535) {
+			return specialIntToHex(bi,2);
+		}
+		 
+		
+		else {
+			return "";
+		}
+		
+		
+	}
+	
 	 
 } // end class
 		

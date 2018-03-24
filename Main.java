@@ -62,8 +62,9 @@ public class Main {
         Seed mySeed = new Seed();
         testSeed= mySeed.generateSeed();
         System.out.println(testSeed);
-        
-        testSeed="raw program because index dutch current minute leaf analyst conduct reject nephew";
+ 
+        testSeed= "raw program because index dutch current minute leaf analyst conduct reject nephew";
+        	       
          System.out.println("ALTERNATE SEED FOR DEBUGGING");
          System.out.println(testSeed);
         
@@ -120,10 +121,10 @@ public class Main {
         String my_c=deserialized_xpub[4];
         String my_cK=deserialized_xpub[5];
         
-        System.out.println(deserialized_xpub[4]);
+        System.out.println("my CK "+my_cK);
 
         System.out.println("AAA");
-        System.out.println(deserialized_xpub[5]);
+        System.out.println("my c "+my_c);
          
         String[] mytest9 = Bitcoin._CKD_priv(xprv_k,xprv_c,"00000000",false);
         
@@ -133,10 +134,40 @@ public class Main {
          
         String [] test11=Bitcoin._CKD_pub(my_cK, my_c, "00000000");
 
+        System.out.println("test11 is "+test11[0]+test11[1]);
+        
+        BigInteger sats= new BigInteger("1100");
 
-         
+        TxOut myOut= new TxOut("1PaaGaj6GqsY83NUQMm89iA1YZmyigHxf7",sats); 
+        String fuck = Transaction.serializeOutput(myOut); 
+        System.out.println("fuci "+fuck);
          // THIS IS WHERE WE 
        
+        
+        String blah="1M5G5DjEBDQNKuTYpszm2Y8n3VQ3HQrP2v";
+		String blah2=Transaction.P2PKH_script(Transaction.decode(blah));
+        System.out.println("blah2 "+blah2);
+        
+
+        BigInteger sats1= new BigInteger("2200");
+
+        BigInteger sats2= new BigInteger("97640");
+
+        BigInteger bi_100k= new BigInteger("100000");
+        TxOut txout1= new TxOut("1FTF9bQhmpohLxoxMSmKS6unHuCYcEXhFs", sats1);
+        
+        TxOut txout2 = new TxOut("1DrwN9uB6kM3pGgGGAcfT6vsPY36PUoeZk",sats2 );
+        
+        TxOut [] barrel = new TxOut[2];
+        barrel[0]=txout1;
+        barrel[1]=txout2;
+        
+        TxIn [] sushi = new TxIn[1];
+        TxIn TxIn1 = new TxIn("e4c977a93c18c5cab67c6c21ab133bba3f294e6d42ebf6bab3ef56a951d92d6b",0,bi_100k);
+        sushi[0]=TxIn1;
+        BigInteger localBlockHeight=new BigInteger("522865");
+        Transaction.serializePreimage(0,  blah,  localBlockHeight, 3, sushi, barrel);
+        
        //MULTITHREAD
        //Runner runner1= new Runner();
 

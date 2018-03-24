@@ -37,7 +37,10 @@ public class Util {
 
 
 	public static String padLeftHexString(String s, int expectedLength) {
-		  
+		 
+		// Expected Lengths is how many digits, not how many bytes.
+		// Be careful when converting from python.  "8" bytes may really mean 16 digits.
+		
 		 String retval=s;
 		 int numberOfZeroes=0;
 		 String zeroString="";
@@ -56,7 +59,26 @@ public class Util {
 	 }
 	
 	 
+	public static String reverseByteString(String s) {
+	
+	 int i;
+	 byte[] myBytes = Bitcoin.hexStringToByteArray(s); 
+	  
+	  //REVERSE IN PLACE
+	  for(i=0; i<myBytes.length/2; i++){ 
+		  byte temp = myBytes[i]; 
+		  myBytes[i] = myBytes[myBytes.length -i -1]; 
+		  myBytes[myBytes.length -i -1] = temp; }
+    // END REVERSE CODE
+
+	 String result=Bitcoin.bytesToHex(myBytes); 
+	 return result;
 	 
+	}
+	
+	
+	
+	
 } // end class
 		
 		
