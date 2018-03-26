@@ -9,6 +9,7 @@ import java.lang.Math;
 import java.util.ArrayList;
 import java.util.Random;
 
+import java.security.KeyFactory;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.swing.plaf.basic.BasicTreeUI.TreeCancelEditingAction;
@@ -23,6 +24,14 @@ import org.bouncycastle.math.ec.ECFieldElement;
 import org.bouncycastle.math.ec.ECPoint; 
 import org.bouncycastle.math.raw.Mod;
 import org.bouncycastle.jce.interfaces.ECPublicKey; 
+ 
+import org.bouncycastle.jcajce.provider.asymmetric.dsa.DSASigner;
+
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.util.Store;
+import org.bouncycastle.util.encoders.Base64;
+
+import java.security.spec.PKCS8EncodedKeySpec;
 
 import java.security.KeyFactory;  
 import java.security.Security;  
@@ -32,10 +41,15 @@ import java.security.PrivateKey;
 import java.security.PublicKey; 
 import java.security.Security;
 import java.security.Signature;
+import java.security.spec.EncodedKeySpec;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
 
 public class Transaction {
 
- 
+
+	private static final String EC_GEN_PARAM_SPEC = "secp256k1";
+    private static final String KEY_PAIR_GEN_ALGORITHM = "ECDSA"; 
     
 	public Transaction()
 	
@@ -84,17 +98,56 @@ public class Transaction {
 		String pre_hash = "b6d0cbd50c5673e00803dc223bd93020ea560771ca1385a70d524ebafeb36a69";
 		
 		
-		
+		byte [] sig=null;
 		
 		//sig 3044022049e296499025a11b16f6a645a5ed5a9fad9b21d2e2714b46b1a208b96a0d275702200bb3b49e3d717e349f33e58cf27d208e2dfb4729f99f17c65654ccc5cd09d090
 	    byte [] data = Bitcoin.hexStringToByteArray(pre_hash);
+	    
 	    //PrivateKey key = new PrivateKey()		
 	    
+	    Signature dsa=null;
 	    
+	   try {
+		     dsa= Signature.getInstance("SHA/DSA");
+			  
+     	 }
+    		catch (NoSuchAlgorithmException e) {
+    		    System.out.println("NO SUCH ALGORITHM EXCEPTION"); 
+    		    System.exit(0);	
+      	    }	
 	   
-	    
-	    
-	    
+	   PrivateKey priv = getPrivateKeyObjectfromString(xprv);
+	   
+	   try {
+
+		   dsa.initSign(priv); 
+   	 }
+  		catch (InvalidKeyException e) {
+  		    System.out.println("INVALID KEY EXCEPTION"); 
+  		    System.exit(0);	
+    	    }
+	   
+	   try {
+
+		   dsa.update(data); 
+   	 }
+  		catch (Exception e) {
+  		     System.out.println("SIGNATURE EXCEPTION"); 
+  		    System.exit(0);	
+    	    }
+	   
+	   try {
+
+		   sig = dsa.sign();
+		    
+   	 }
+  		catch (Exception e) {
+  		     System.out.println("SIGNATURE EXCEPTION"); 
+  		    System.exit(0);	
+    	    }
+	   
+	   System.out.println("wow dude , sig is "+ Bitcoin.bytesToHex(sig));
+	   
 		return "";
 	}
 	
@@ -263,6 +316,47 @@ public class Transaction {
 		retval=retval.substring(0, len-8); 
 		return retval; 
 	}
+	
+	
+	 
+	public static PrivateKey getPrivateKeyObjectfromString(String mykey) {
+
+		// Bouncy Castle used to provide Crypto Libraries
+		Security.addProvider(new BouncyCastleProvider()); 
+		PrivateKey privKey=null;
+	        
+		            // A TEST VALUE FOR NOW
+					String xprv = "94a11d0bad3da900f5c7b19a92ef11ddb9aecf7bf9b1e11c0d9080c8cc2f3dc2";
+					byte [] data = Bitcoin.hexStringToByteArray(xprv);
+    				 
+    				 KeyFactory keyFactory=null;
+    		       	 try {
+    		       	   	  keyFactory = KeyFactory.getInstance(KEY_PAIR_GEN_ALGORITHM);
+    		        	 }
+    		       		catch (NoSuchAlgorithmException e) {
+    		       		    System.out.println("NO SUCH ALGORITHM EXCEPTION"); 
+    		       		    System.exit(0);	
+    		         	    }	 
+    		        
+    		         try {
+    		        	 
+    		        	 
+    		        	 final PKCS8EncodedKeySpec privSpec=new   PKCS8EncodedKeySpec(data);
+    		        	 	 privKey=keyFactory.generatePrivate(privSpec);
+    		         	 
+    		         }
+    		         catch (InvalidKeySpecException e)   {
+ 		       		    System.out.println("INVALID KkkkEY SPEC EXCEPTION"); 
+ 		       		    System.exit(0);	
+ 		         	    }
+    		         
+    		         return privKey;
+    		         
+	}
+	
+	 
+	
+	
 	
 	
 	public static void Generate() 

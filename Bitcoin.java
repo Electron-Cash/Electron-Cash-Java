@@ -615,6 +615,8 @@ public class Bitcoin {
         ECPoint ecPoint = ecParameterSpec.getG().multiply(secretExponent); 
         
         KeySpec publicKeySpec = new ECPublicKeySpec(ecPoint, ecParameterSpec);
+
+      //  KeySpec privateKeySpec = new ECPrivateKeySpec(ecPoint, ecParameterSpec);
         PublicKey publicKey=null;
         KeyFactory keyFactory=null;
        	 try {
@@ -626,6 +628,8 @@ public class Bitcoin {
          	    }
         try {
              publicKey = keyFactory.generatePublic(publicKeySpec);
+
+            // privateKey = keyFactory.generatePublic(publicKeySpec);
              }
              catch (InvalidKeySpecException e) {
         	     System.out.println("INVALID KEY SPEC EXCEPTION"); 

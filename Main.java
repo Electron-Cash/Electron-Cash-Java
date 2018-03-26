@@ -168,6 +168,9 @@ public class Main {
         BigInteger localBlockHeight=new BigInteger("522865");
         Transaction.serializePreimage(0,  blah,  localBlockHeight, 3, sushi, barrel);
         
+        Transaction.createSignatureFromKey("", "");
+        
+        
        //MULTITHREAD
        //Runner runner1= new Runner();
 
