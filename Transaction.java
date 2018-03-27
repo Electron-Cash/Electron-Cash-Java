@@ -334,7 +334,7 @@ public class Transaction {
 
 		}
 		catch (InvalidKeySpecException e)   {
-			System.out.println("INVALID KkkkEY SPEC EXCEPTION"); 
+			System.out.println("INVALID KEY SPEC EXCEPTION"); 
 			System.exit(0);	
 		}
 

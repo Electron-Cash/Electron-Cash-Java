@@ -101,23 +101,13 @@ public class Main {
         System.out.println("deserializedXprvPieces c "+ xprv_c );
 
         System.out.println("deserializedXprvPieces k "+ xprv_k );
-
-        //String [] testmonk = _CKD_pub();
-        
-        
-        
-        //DAA.daa_test();
-       
-       // String deserialized_xpub=Bitcoin.base_decode_58(final_xpub);
+ 
         String deserialized_xpub[] =Bitcoin.deserialize_xkey(final_xpub,false);
+        
+        
+        
         System.out.println("---------");
-      //  System.out.println(deserialized_xpub[0]);
-
-       // System.out.println(deserialized_xpub[1]);
-
-       // System.out.println(deserialized_xpub[2]);
-
-       // System.out.println(deserialized_xpub[3]);
+       
         String my_c=deserialized_xpub[4];
         String my_cK=deserialized_xpub[5];
         
@@ -131,10 +121,85 @@ public class Main {
        
         System.out.println("----");
         System.out.println("mytest9 "+mytest9[0]);
-         
-        String [] test11=Bitcoin._CKD_pub(my_cK, my_c, "00000000");
+        
+        System.out.println("______________________________________");
 
-        System.out.println("test11 is "+test11[0]+test11[1]);
+        System.out.println("______________CKD PUB_________________");
+        System.out.println("______________________________________");
+        
+        System.out.println("INPUTS are: my_cK "+my_cK+" my_c "+my_c);
+        
+        
+        //FIRST DERIVED RECEIVING ADDR KEY -- JUST BASE 
+        String [] newKeys=Bitcoin._CKD_pub(my_cK, my_c, "00000000");
+        String my_cK2=newKeys[0];
+        String my_c2=newKeys[1];
+        System.out.println("test11 is "+my_cK2+" "+my_c2);
+       
+        //FIRST DERIVED CHANGE ADDR KEY --  JUST BASE  
+        String [] changeKeys=Bitcoin._CKD_pub(my_cK, my_c, "00000001");
+        String my_cK2_change=changeKeys[0];
+        String my_c2_change=changeKeys[1];
+        System.out.println("test11 is "+my_cK2+" "+my_c2);
+       
+        
+        
+        
+        // DERIVED PUBKEY (FIRST RECEIVING ADDRESS)
+        newKeys=Bitcoin._CKD_pub(my_cK2, my_c2, "00000000");
+         String my_cK3=newKeys[0];
+        String my_c3=newKeys[1];
+        System.out.println("test12 is "+my_cK3+" "+my_c3);
+         
+
+        //SECOND RECEIVING ADDRESS
+        newKeys=Bitcoin._CKD_pub(my_cK2, my_c2, "00000001");
+        my_cK3=newKeys[0];
+         my_c3=newKeys[1];
+        System.out.println("test13 is "+my_cK3+" "+my_c3);
+        
+
+        //THIRD RECEIVING ADDRESS
+        newKeys=Bitcoin._CKD_pub(my_cK2, my_c2, "00000002");
+        my_cK3=newKeys[0];
+       my_c3=newKeys[1];
+        System.out.println("test14 is "+my_cK3+" "+my_c3);
+        
+        
+        
+        // DERIVED PUBKEY (FIRST CHANGE ADDRESS)
+        newKeys=Bitcoin._CKD_pub(my_cK2_change, my_c2_change, "00000000");
+         my_cK3=newKeys[0];
+          my_c3=newKeys[1];
+        System.out.println("test15 is "+my_cK3+" "+my_c3);
+         
+
+        //SECOND CHANGE ADDRESS
+        newKeys=Bitcoin._CKD_pub(my_cK2_change, my_c2_change, "00000001");
+        my_cK3=newKeys[0];
+         my_c3=newKeys[1];
+       System.out.println("test16 is "+my_cK3+" "+my_c3);
+        
+
+        //THIRD CHANGE ADDRESS
+         newKeys=Bitcoin._CKD_pub(my_cK2_change, my_c2_change, "00000002");
+        my_cK3=newKeys[0];
+        my_c3=newKeys[1];
+      System.out.println("test17 is "+my_cK3+" "+my_c3);
+       
+        
+        
+        
+        
+        
+        
+        
+
+        System.out.println("______________________________________");
+
+        System.out.println("______________TRANSACTIONS_________________");
+        System.out.println("______________________________________");
+        
         
         BigInteger sats= new BigInteger("1100");
 

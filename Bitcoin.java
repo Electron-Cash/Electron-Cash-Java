@@ -570,7 +570,7 @@ public class Bitcoin {
       String I_hex=bytesToHex(I);
       String I_hex32= I_hex.substring(0,64); // first 32 bytes (64 chars)
           BigInteger bi_I32= new BigInteger(I_hex32,16);
-          System.out.println("bi I32 is "+ bi_I32);
+          //System.out.println("bi I32 is "+ bi_I32);
 
       // ECPoint ecPoint; // = ecParameterSpec.getG();
           byte [] cK_bytes = new BigInteger(cK,16).toByteArray();
