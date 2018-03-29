@@ -139,8 +139,7 @@ public class Bitcoin {
 	
 	public static String base_decode_58(String v) {
 		
-		System.out.println("input into decode is v "+v);
-		int base=58;
+		 int base=58;
 		
 		
 		BigInteger bi_58= new BigInteger("58");
@@ -196,25 +195,18 @@ public class Bitcoin {
 			 div=divMod[0];
 			 mod=divMod[1];
 
-			 //System.out.println("div is "+div);
-			// System.out.println("mod is "+mod);
-			 modhex=Integer.toHexString(mod.intValue());
+			   modhex=Integer.toHexString(mod.intValue());
 			 
 			 // ensure hexbyte contains leading 0 if necessary.
 			 if (modhex.length()==1) {
 				 modhex="0"+modhex;
 			 }
-			 
-			// System.out.println("qbert modhex is " + modhex);
-			 //modchar = (char) mod.intValue();
-			 
+			 	 
 			 result=result+modhex;
 			 
 					 
 			 long_value=div;
-			 //System.out.println("but now long value is "+long_value);
-			// System.out.println ("but now result is " + result);
-		}
+			 }
 		String long_value_string=long_value.toString();
 		 if (long_value_string.length()==1) {
 			 long_value_string="0"+long_value_string;
@@ -237,8 +229,7 @@ public class Bitcoin {
 			
 		} //end while
 		
-		System.out.println("nPad "+nPad);
-		
+		 
 		for (int n = 0; n < nPad; n++) {
 		       result=result+"00";
 		    }
@@ -272,12 +263,8 @@ public class Bitcoin {
 			
 		byte[] vBytes=hexStringToByteArray(v);
 		
-		//System.out.println("suffixHash");
-		//System.out.println(suffixHash);
-        v= v+suffixHash.substring(0,8) ;
-		//System.out.println("basic bitch is ");
-       // System.out.println(v);
-      	int  c=0,i = 0;
+		     v= v+suffixHash.substring(0,8) ;
+		   	int  c=0,i = 0;
 		BigInteger val1 = BigInteger.ZERO;
 		BigInteger val2 = BigInteger.ZERO;
 		BigInteger long_value=BigInteger.ZERO;
@@ -298,8 +285,7 @@ public class Bitcoin {
              val2 = val1.multiply(cc);
 
              long_value=long_value.add(val2);
-             //System.out.println("debugging long loop i "+ i + " cc "+cc + " val1 "+val1+" val2 " + val2 + " long val " +long_value);
-            i++;
+             i++;
             
         } 
 		
@@ -385,7 +371,7 @@ public class Bitcoin {
 					
 			try {
 				digest = MessageDigest.getInstance("SHA-256");
-				digest2 = MessageDigest.getInstance("RIPE-MD160");
+				digest2 = MessageDigest.getInstance("RIPEMD160");
 			    }
 			    catch (NoSuchAlgorithmException e) {
 			        System.out.println("NO SUCH ALGORITHM EXCEPTION"); 
@@ -463,7 +449,6 @@ public class Bitcoin {
 		
        String K_or_k;
        K_or_k = xkey.substring(26+(n*2),xkey.length());
-       System.out.println("k or k "+ K_or_k);
 		String[] retval = new String[6];
 	    retval[0]="standard"; // xtype
 	    retval[1]=depth; 
@@ -482,8 +467,7 @@ public class Bitcoin {
 	
     public static byte[] get_root512_from_bip32root(byte[] bip32root) {
     	byte[] root512 = hmac_sha_512_bytes(bip32root, "Bitcoin seed");
-    	System.out.println("DEBUGSERIES 1 "+bytesToHex(root512));
-		return root512;	
+    	return root512;	
     }
     
     
@@ -539,6 +523,8 @@ public class Bitcoin {
     	
     	String I_hex=bytesToHex(I);
     	String I_hex32= I_hex.substring(0,64); // first 32 bytes (64 chars)
+    	String I_hex32b= I_hex.substring(64,I_hex.length()); // first 32 bytes (64 chars)
+    	
     	BigInteger bi_I32= new BigInteger(I_hex32,16);  	
         BigInteger bi_k = new BigInteger (k,16); 
         
@@ -552,7 +538,7 @@ public class Bitcoin {
  
     	retval[0]=k_n;
  
-    	retval[1]=I_hex32; 
+    	retval[1]=I_hex32b; 
     	return retval;
     }
     
@@ -793,8 +779,7 @@ public class Bitcoin {
 
 		      temp.append(decimal);
 		  }
-		  System.out.println("Decimal : " + temp.toString());
-
+		  
 		  return sb.toString();
 	  }
 	 

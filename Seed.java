@@ -50,8 +50,7 @@ ArrayList<String> wordList = new ArrayList<String>();
                 new BufferedReader(fileReader);
 
             while((line = bufferedReader.readLine()) != null) {
-                //System.out.println(line);
-                wordList.add(line);
+                 wordList.add(line);
             }   
 
             // Always close files.

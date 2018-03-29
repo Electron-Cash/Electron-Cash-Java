@@ -16,6 +16,7 @@ import javax.swing.plaf.basic.BasicTreeUI.TreeCancelEditingAction;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.crypto.DerivationFunction;
+import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
 import org.bouncycastle.jce.spec.ECNamedCurveSpec;
@@ -28,6 +29,15 @@ import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.math.raw.Mod;
 import org.bouncycastle.jce.interfaces.ECPublicKey; 
 
+
+import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
+import org.bouncycastle.asn1.sec.SECNamedCurves;
+import org.bouncycastle.asn1.x9.X9ECParameters;
+import org.bouncycastle.crypto.params.ECDomainParameters;
+
+
+import org.bouncycastle.crypto.signers.ECDSASigner;
+import org.bouncycastle.crypto.signers.HMacDSAKCalculator;
 import org.bouncycastle.jcajce.provider.asymmetric.dsa.DSASigner;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -54,6 +64,10 @@ public class Transaction {
 
 	private static final String EC_GEN_PARAM_SPEC = "secp256k1";
 	private static final String KEY_PAIR_GEN_ALGORITHM = "ECDSA"; 
+	
+	static final X9ECParameters curve = SECNamedCurves.getByName("secp256k1");
+	static final ECDomainParameters domain = new ECDomainParameters(curve.getCurve(), curve.getG(), curve.getN(), curve.getH());
+    
 
 	public Transaction()
 
@@ -168,6 +182,7 @@ public class Transaction {
 		for ( j=0; j < txouts.length; j++) {
 			hashOutputs +=serializeOutput(txouts[j]);
 		}
+		System.out.println("before hasings the hash outputs are "+hashOutputs);
 		hashOutputs=Bitcoin.Hash(hashOutputs);
 		outpoint = serializeOutpoint (txins[i]);
 
@@ -184,11 +199,11 @@ public class Transaction {
 		preimage=nVersion+hashPrevouts+hashSequence+outpoint+scriptCode+amount+nSequence+hashOutputs+nLocktime+nHashtype;
 
 
-		// System.out.println("hashprevouts is "+hashPrevouts+ " hashSequence" + hashSequence);
-		// System.out.println("outpoint " +outpoint+ "scriptCode "+scriptCode);
-		// System.out.println("amount "+amount+ " nseqeunce "+nSequence);
-		// System.out.println("hashoutputs "+hashOutputs+" nlocktime "+nLocktime);
-		// System.out.println("pre image is "+preimage);
+		  System.out.println("hashprevouts is "+hashPrevouts+ " hashSequence" + hashSequence);
+		  System.out.println("outpoint " +outpoint+ "scriptCode "+scriptCode);
+		  System.out.println("amount "+amount+ " nseqeunce "+nSequence);
+		  System.out.println("hashoutputs "+hashOutputs+" nlocktime "+nLocktime);
+		  System.out.println("pre image is "+preimage);
 		return preimage;
 
 	}
@@ -314,8 +329,8 @@ public class Transaction {
 		PrivateKey privKey=null;
 
 		// A TEST VALUE FOR NOW
-		String xprv = "94a11d0bad3da900f5c7b19a92ef11ddb9aecf7bf9b1e11c0d9080c8cc2f3dc2";
-		byte [] data = Bitcoin.hexStringToByteArray(xprv);
+		//String xprv = "94a11d0bad3da900f5c7b19a92ef11ddb9aecf7bf9b1e11c0d9080c8cc2f3dc2";
+		byte [] data = Bitcoin.hexStringToByteArray(mykey);
 
 		KeyFactory keyFactory=null;
 		try {
@@ -344,7 +359,16 @@ public class Transaction {
 
 
 
+   public static BigInteger[] GetSignature(String privkey, byte[] myhash) {
+	   
 
+		ECDSASigner signer = new ECDSASigner(new HMacDSAKCalculator(new SHA256Digest()));
+		signer.init(true, new ECPrivateKeyParameters(new BigInteger(privkey,16), domain));
+        BigInteger[] signature = signer.generateSignature(myhash);
+       
+	    return signature;
+	    
+   }
 
 
 	public static void Generate() 
@@ -364,7 +388,8 @@ public class Transaction {
 		String redeemScript=Bitcoin.ripeHash(addr);
 
 		System.out.println("satoshiAmountHex "+satoshiAmountHex);
-
+ 
+		
 
 	} // end  func
 } // end class

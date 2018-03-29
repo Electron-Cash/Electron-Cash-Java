@@ -64,19 +64,18 @@ public class Main {
         System.out.println(testSeed);
  
         testSeed= "raw program because index dutch current minute leaf analyst conduct reject nephew";
-        	       
          System.out.println("ALTERNATE SEED FOR DEBUGGING");
          System.out.println(testSeed);
         
         
         byte[] bip32root = MasterKeys.get_seed_from_mnemonic(testSeed);
         byte[] root512 = Bitcoin.get_root512_from_bip32root(bip32root);
-       System.out.println("root 512 is "+Bitcoin.bytesToHex(root512));
+       //System.out.println("root 512 is "+Bitcoin.bytesToHex(root512));
         byte[] kBytes = Arrays.copyOfRange(root512, 0, 32);
         byte[] cBytes = Arrays.copyOfRange(root512, 32, 64);
         String jonaldPubKey = Bitcoin.get_pubkey_from_secret(kBytes);
-        System.out.println("pubkey");
-       System.out.println(jonaldPubKey);
+        //System.out.println("pubkey");
+      // System.out.println(jonaldPubKey);
        String serializedXprv = Bitcoin.serializeXprv(cBytes,  kBytes);
         byte[] cKbytes=Bitcoin.hexStringToByteArray(jonaldPubKey);
         String serializedXpub=Bitcoin.serializeXpub(cBytes, cKbytes );
@@ -111,16 +110,27 @@ public class Main {
         String my_c=deserialized_xpub[4];
         String my_cK=deserialized_xpub[5];
         
-        System.out.println("my CK "+my_cK);
+        //System.out.println("my CK "+my_cK);
 
-        System.out.println("AAA");
-        System.out.println("my c "+my_c);
+       // System.out.println("AAA");
+       //System.out.println("my c "+my_c);
          
-        String[] mytest9 = Bitcoin._CKD_priv(xprv_k,xprv_c,"00000000",false);
+        String[] my_derived_priv = Bitcoin._CKD_priv(xprv_k,xprv_c,"00000000",false);
+
+        String[] my_derived_priv2 = Bitcoin._CKD_priv(my_derived_priv[0],my_derived_priv[1],"00000000",false);
+
+        System.out.println("______________________________________");
+
+        System.out.println("______________CKD PRIV_________________");
+        System.out.println("______________________________________");
+         
+        System.out.println("mytest9 "+my_derived_priv[0]);
+
+        System.out.println("mytest9b "+my_derived_priv[1]);
+
+        System.out.println("mytest9c "+my_derived_priv2[0]);
         
-       
-        System.out.println("----");
-        System.out.println("mytest9 "+mytest9[0]);
+        String testPrivKey=my_derived_priv2[0];
         
         System.out.println("______________________________________");
 
@@ -188,11 +198,16 @@ public class Main {
       System.out.println("test17 is "+my_cK3+" "+my_c3);
        
         
+        String pubKeyHash=Bitcoin.ripeHash(my_cK3);
+        System.out.println("pubkey hash is "+pubKeyHash);
+        
+        
+        byte[]  pubKeyHashBytes =Bitcoin.hexStringToByteArray(pubKeyHash);
         
         
         
-        
-        
+     String cash_address = CashAddr.toCashAddress(BitcoinCashAddressType.P2PKH,pubKeyHashBytes);
+         System.out.println("third change address is "+cash_address);
         
 
         System.out.println("______________________________________");
@@ -204,8 +219,8 @@ public class Main {
         BigInteger sats= new BigInteger("1100");
 
         TxOut myOut= new TxOut("1PaaGaj6GqsY83NUQMm89iA1YZmyigHxf7",sats); 
-        String fuck = Transaction.serializeOutput(myOut); 
-        System.out.println("fuci "+fuck);
+        String fu = Transaction.serializeOutput(myOut); 
+        System.out.println("fu"  +fu);
          // THIS IS WHERE WE 
        
         
@@ -230,10 +245,26 @@ public class Main {
         TxIn [] sushi = new TxIn[1];
         TxIn TxIn1 = new TxIn("e4c977a93c18c5cab67c6c21ab133bba3f294e6d42ebf6bab3ef56a951d92d6b",0,bi_100k);
         sushi[0]=TxIn1;
-        BigInteger localBlockHeight=new BigInteger("522865");
-        Transaction.serializePreimage(0,  blah,  localBlockHeight, 3, sushi, barrel);
+        BigInteger localBlockHeight=new BigInteger("523547");
         
-        Transaction.createSignatureFromKey("", "");
+        String myPreImage=Transaction.serializePreimage(0,  blah,  localBlockHeight, 3, sushi, barrel);
+        String pre_hash=Bitcoin.Hash(myPreImage);
+        
+        System.out.println("mypreimage is "+myPreImage);
+
+        System.out.println("pre_hash is "+pre_hash);
+
+        byte[] mypreimage_bytes=Bitcoin.hexStringToByteArray(myPreImage);
+        
+        byte[] specialTest=Bitcoin.hexStringToByteArray("523547");
+        System.out.println("testprivkey is "+testPrivKey);
+        //BigInteger [] gottenSig = Transaction.GetSignature(testPrivKey,mypreimage_bytes);
+        BigInteger [] gottenSig = Transaction.GetSignature(testPrivKey,specialTest);
+        
+        System.out.println("GOTTEN SIG");
+        System.out.println("r is "+gottenSig[0].toString(16));
+        System.out.println("s is "+gottenSig[1].toString(16));
+        
         
         
        //MULTITHREAD
@@ -243,6 +274,22 @@ public class Main {
        //runner1.start();
        //runner2.start();
        
+        /*
+         * punkeys 0 is  000000000000000000000000000000000000000000000000000000000000000000
+print (order)
+115792089237316195423570985008687907852837564279074904382605163141518161494337
+(Pdb) print (secexp)
+67226964433200607603037290798219818051850022829628052766905875504700037479874
+(Pdb) print (hash_func)
+<built-in function openssl_sha256>
+(Pdb) print (data)
+b'\x84\xa4\xdd\xe2\x99_\xde\xe9\x9e\xc7n\x18\xadh\x03\xb4\xdaPo\x9cEp\xb3,F\xcc\x9f\xe2\xa1X\xfe\xd9'
+(Pdb) print (data.hex())
+84a4dde2995fdee99ec76e18ad6803b4da506f9c4570b32c46cc9fe2a158fed9
+(Pdb) 
+         */
+        
+        
     } // end main func
  
  
