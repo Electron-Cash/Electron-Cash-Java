@@ -31,6 +31,8 @@ import org.bouncycastle.jce.interfaces.ECPublicKey;
 
 
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
+import org.bouncycastle.asn1.ASN1Integer;
+import org.bouncycastle.asn1.DERSequenceGenerator;
 import org.bouncycastle.asn1.sec.SECNamedCurves;
 import org.bouncycastle.asn1.x9.X9ECParameters;
 import org.bouncycastle.crypto.params.ECDomainParameters;
@@ -66,7 +68,7 @@ public class Transaction {
 	private static final String KEY_PAIR_GEN_ALGORITHM = "ECDSA"; 
 	
 	static final X9ECParameters curve = SECNamedCurves.getByName("secp256k1");
-	static final ECDomainParameters domain = new ECDomainParameters(curve.getCurve(), curve.getG(), curve.getN(), curve.getH());
+	static final ECDomainParameters domain = new ECDomainParameters(curve.getCurve(), curve.getG(), curve.getN(), curve.getH(),curve.getSeed());
     
 
 	public Transaction()
@@ -359,17 +361,32 @@ public class Transaction {
 
 
 
-   public static BigInteger[] GetSignature(String privkey, byte[] myhash) {
+   public static String GetSignature(String privkey, byte[] myhash) {
 	   
+	   System.out.println(new BigInteger(privkey,16));
 
 		ECDSASigner signer = new ECDSASigner(new HMacDSAKCalculator(new SHA256Digest()));
 		signer.init(true, new ECPrivateKeyParameters(new BigInteger(privkey,16), domain));
         BigInteger[] signature = signer.generateSignature(myhash);
-       
-	    return signature;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            DERSequenceGenerator seq = new DERSequenceGenerator(baos);
+            seq.addObject(new ASN1Integer(signature[0]));
+            seq.addObject(new ASN1Integer(toCanonicalS(signature[1])));
+            seq.close();
+            return Bitcoin.bytesToHex(baos.toByteArray());
+        } catch (IOException e) {
+        }
+	    return "";
 	    
    }
-
+   private static BigInteger toCanonicalS(BigInteger s) {
+       if (s.compareTo(curve.getN().shiftRight(1)) <= 0) {
+           return s;
+       } else {
+           return curve.getN().subtract(s);
+       }
+   }
 
 	public static void Generate() 
 

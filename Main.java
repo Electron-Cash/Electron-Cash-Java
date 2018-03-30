@@ -3,9 +3,8 @@ package main;
 import java.io.*;
 import java.math.BigInteger;
 
-import tupleList.TupleList;
-import tupleList.Tuple; 
- 
+import org.bouncycastle.asn1.ASN1Integer;
+import org.bouncycastle.asn1.DERSequenceGenerator;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.interfaces.ECPrivateKey;
 import org.bouncycastle.jce.interfaces.ECPublicKey;
@@ -67,6 +66,7 @@ public class Main {
          System.out.println("ALTERNATE SEED FOR DEBUGGING");
          System.out.println(testSeed);
         
+         testSeed= "fix glare garden safe ill speed stool table oblige admit barrel acid";
         
         byte[] bip32root = MasterKeys.get_seed_from_mnemonic(testSeed);
         byte[] root512 = Bitcoin.get_root512_from_bip32root(bip32root);
@@ -259,11 +259,9 @@ public class Main {
         byte[] specialTest=Bitcoin.hexStringToByteArray("523547");
         System.out.println("testprivkey is "+testPrivKey);
         //BigInteger [] gottenSig = Transaction.GetSignature(testPrivKey,mypreimage_bytes);
-        BigInteger [] gottenSig = Transaction.GetSignature(testPrivKey,specialTest);
+        String gottenSig = Transaction.GetSignature(testPrivKey,Bitcoin.hexStringToByteArray(pre_hash));
         
-        System.out.println("GOTTEN SIG");
-        System.out.println("r is "+gottenSig[0].toString(16));
-        System.out.println("s is "+gottenSig[1].toString(16));
+        System.out.println("GOTTEN SIG "+gottenSig);
         
         
         
