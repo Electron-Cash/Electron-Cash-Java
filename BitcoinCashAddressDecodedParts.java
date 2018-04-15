@@ -1,5 +1,7 @@
 package main;
  
+// Helper class for CashAddr
+
 public class BitcoinCashAddressDecodedParts {
 
 	String prefix;

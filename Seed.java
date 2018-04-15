@@ -2,15 +2,10 @@ package main;
 
 import java.io.*;
 
-import java.math.BigInteger;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.lang.Math;
+import java.math.BigInteger; 
 import java.util.ArrayList;
 import java.util.Random;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
+ 
  
 public class Seed {
 

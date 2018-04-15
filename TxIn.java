@@ -1,50 +1,23 @@
 package main;
 
-import java.io.*;
-
 import java.math.BigInteger;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.lang.Math;
-import java.util.ArrayList;
-import java.util.Random;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-
-
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.crypto.DerivationFunction;
-import org.bouncycastle.jce.ECNamedCurveTable;
-import org.bouncycastle.jce.spec.ECParameterSpec; 
-import org.bouncycastle.jce.spec.ECPublicKeySpec;
-import org.bouncycastle.math.ec.ECCurve;
-import org.bouncycastle.math.ec.ECFieldElement;
-import org.bouncycastle.math.ec.ECPoint; 
-import org.bouncycastle.math.raw.Mod;
-import org.bouncycastle.jce.interfaces.ECPublicKey; 
-
-import java.security.KeyFactory;  
-import java.security.Security;  
-import java.security.MessageDigest;
-import java.security.PrivateKey;
- 
-import java.security.PublicKey; 
-import java.security.Security;
-import java.security.Signature;
 
 public class TxIn {
 
  private String prevout_hash;
  private int prevout_n;
  private BigInteger satoshiAmount;
+ private String script;
+ private WalletAddress addr;
+ private String signature;
     
-	public TxIn (String zprevout_hash, int zprevout_n, BigInteger zamount)
+	public TxIn (WalletAddress zaddr, String zprevout_hash, int zprevout_n, BigInteger zamount)
 	
 	{ 
 		 prevout_hash=zprevout_hash;
 		 prevout_n=zprevout_n;
 		 satoshiAmount=zamount;
+		 addr=zaddr;
 		
 	}
 	
@@ -60,11 +33,26 @@ public class TxIn {
 		prevout_n=n;
 	}
 	
+	public void setScript(String zscript) {
+		script=zscript;
+	}
+	
+	public void setAddr(WalletAddress zaddr) {
+		addr=zaddr;
+	}
+	
+	public void setSignature (String sig) {
+		signature=sig;
+	}
 	
 	public String getHash() {
 		return prevout_hash;
 	}
 	 
+	public WalletAddress getAddr() {
+		return addr;
+	}
+	
 	public BigInteger getAmount () {
 		return satoshiAmount;
 	}
@@ -73,6 +61,13 @@ public class TxIn {
 		return prevout_n;
 	}
 	
+	public String getScript() {
+		return script;
+	}
+	
+	public String getSignature() {
+		return signature;
+	}
 	  
 } // end class
 		

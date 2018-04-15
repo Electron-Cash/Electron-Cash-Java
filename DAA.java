@@ -4,14 +4,12 @@ import java.math.BigInteger;
 
 public class DAA {
 
-	
-	static boolean TEST_MODE=true;
-	
+	static boolean TEST_MODE = true;
+
 	public DAA()
 
 	{
 	}
-
 
 	public static BigInteger daa_Get_TimeStamp_From_Block_Height(int blockHeight) {
 
@@ -26,9 +24,8 @@ public class DAA {
 
 		if (TEST_MODE) {
 
-			
-			//https://hastebin.com/kolozazeda.vbs
-			blockHeight=blockHeight-518918;
+			// https://hastebin.com/kolozazeda.vbs
+			blockHeight = blockHeight - 518918;
 			BigInteger[] arr = new BigInteger[145];
 			arr[0] = BigInteger.ZERO;
 			arr[1] = new BigInteger("402850571");
@@ -175,12 +172,11 @@ public class DAA {
 			arr[142] = new BigInteger("402854104");
 			arr[143] = new BigInteger("402854142");
 			arr[144] = new BigInteger("402853955");
-			BigInteger retVal=arr[blockHeight];
- 
+			BigInteger retVal = arr[blockHeight];
+
 			return retVal;
 		}
-		
-		
+
 		// THIS WILL NEED TO BE DE-ABSTRACTED TO GET ACTUAL BLOCKHEIGHT.
 		// IN OTHER WORDS, YOU NEED TO WRITE THIS FUNCTION.
 
@@ -188,7 +184,7 @@ public class DAA {
 	}
 
 	// ==================================================================================
-	
+
 	boolean daa_Is_Current_Block_Valid(int blockheight) {
 
 		// Block 504035 comes after Nov 13th DAA HF.
@@ -207,8 +203,6 @@ public class DAA {
 			return true;
 		}
 	}
-
-
 
 	public static int daa_Get_Suitable_Height(int suitableHeight) {
 
@@ -270,12 +264,12 @@ public class DAA {
 	public static BigInteger daa_Bits_To_Target(BigInteger bits) {
 
 		BigInteger mask1 = new BigInteger("00ffffff", 16);
-		BigInteger size = bits.shiftRight(24); 
+		BigInteger size = bits.shiftRight(24);
 		BigInteger word = bits.and(mask1);
 		int val1 = 0;
 		int i_size = size.intValue();
 
-		// size variable will be small because we are shifting 24 bits. 
+		// size variable will be small because we are shifting 24 bits.
 		if (i_size <= 3) {
 			val1 = (8 * (3 - i_size));
 			return word.shiftRight(val1);
@@ -289,7 +283,7 @@ public class DAA {
 
 		int size;
 		BigInteger mask64 = new BigInteger("ffffffffffffffff", 16);
-		BigInteger mask1 = new BigInteger("00800000", 16); 
+		BigInteger mask1 = new BigInteger("00800000", 16);
 		BigInteger bi_compact = BigInteger.ZERO;
 		int val1, val2;
 
@@ -298,27 +292,25 @@ public class DAA {
 		}
 
 		BigInteger MAX_BITS = new BigInteger("1d00ffff", 16);
-		BigInteger MAX_TARGET = daa_Bits_To_Target(MAX_BITS); 
-		target = target.min(MAX_TARGET); 
+		BigInteger MAX_TARGET = daa_Bits_To_Target(MAX_BITS);
+		target = target.min(MAX_TARGET);
 		size = (target.bitLength() + 7) / 8;
 		val1 = (8 * (3 - size));
 		val2 = (8 * (size - 3));
-        
+
 		if (size <= 3) {
 			bi_compact = (target.and(mask64)).shiftLeft(val1);
 		} else {
-			bi_compact = (target.shiftRight(val2)).and(mask64); 
+			bi_compact = (target.shiftRight(val2)).and(mask64);
 		}
-         
-		
+
 		if (bi_compact.and(mask1).compareTo(BigInteger.ZERO) == 1) {
 			bi_compact = bi_compact.shiftRight(8);
 			size++;
 		}
- 
-		
+
 		BigInteger bi_size = BigInteger.valueOf(size);
-		bi_size=bi_size.shiftLeft(24);
+		bi_size = bi_size.shiftLeft(24);
 		return bi_compact.or(bi_size);
 	}
 
@@ -375,14 +367,15 @@ public class DAA {
 		return daa_Retval;
 
 	}
+
 	public static BigInteger daa_Get_Bits_Required_TEST(int blockheight) {
-        
+
 		// THIS FUNCTION ONLY FOR UNIT TESTING!
 		// TEST EXPECTS ARGUMENT blockheight = 518918
- 			
+
 		int daa_Starting_Height;
 		int daa_Ending_Height;
-		
+
 		BigInteger daa_Starting_Timestamp;
 		BigInteger daa_Ending_Timestamp;
 		BigInteger daa_Elapsed_Time;
@@ -395,30 +388,30 @@ public class DAA {
 		BigInteger bigWork;
 		int prevheight = blockheight - 1;
 
-		//TEST VARIABLES -- FROM ELECTRON CASH MAINNET OUTPUT
-		daa_Starting_Height =  518918;
-		daa_Ending_Height =  519062;
-		
+		// TEST VARIABLES -- FROM ELECTRON CASH MAINNET OUTPUT
+		daa_Starting_Height = 518918;
+		daa_Ending_Height = 519062;
+
 		BigInteger daa_Cumulative_Work = BigInteger.ZERO;
 		BigInteger daa_Work_For_A_Block = BigInteger.ZERO;
 		BigInteger daa_Bits_For_A_Block = BigInteger.ZERO;
 
 		// calculate cumulative work (EXcluding work from block daa_starting_height,
 		// INcluding work from block daa_ending_height
-		
+
 		for (int daa_i = daa_Starting_Height + 1; daa_i <= daa_Ending_Height; daa_i++) {
-			
+
 			daa_Bits_For_A_Block = daa_Get_Difficulty_Bits_From_Block_Height(daa_i);
 			daa_Work_For_A_Block = daa_Bits_To_Work(daa_Bits_For_A_Block);
-			daa_Cumulative_Work = daa_Cumulative_Work.add(daa_Work_For_A_Block); 
+			daa_Cumulative_Work = daa_Cumulative_Work.add(daa_Work_For_A_Block);
 		}
 
 		// calculate and sanitize elapsed time
-		
-		//TEST VARIABLES -- FROM ELECTRON CASH MAINNET OUTPUT
+
+		// TEST VARIABLES -- FROM ELECTRON CASH MAINNET OUTPUT
 		daa_Starting_Timestamp = new BigInteger("1519555872");
 		daa_Ending_Timestamp = new BigInteger("1519642492");
-		  
+
 		daa_Elapsed_Time = daa_Ending_Timestamp.subtract(daa_Starting_Timestamp);
 		if (daa_Elapsed_Time.compareTo(bi_172800) == 1) {
 			daa_Elapsed_Time = bi_172800;
@@ -426,8 +419,7 @@ public class DAA {
 		if (daa_Elapsed_Time.compareTo(bi_43200) == -11) {
 			daa_Elapsed_Time = bi_43200;
 		}
-		 
-		
+
 		// calculate and return new target
 		daa_Wn = (daa_Cumulative_Work.multiply(bi_600)).divide(daa_Elapsed_Time); // daa_elapsed_time
 		bigWork = (BigInteger.ONE).shiftLeft(256);
@@ -437,15 +429,14 @@ public class DAA {
 		return daa_Retval;
 
 	}
-	
+
 	public static void daa_test() {
 
-        BigInteger myTest=daa_Get_Bits_Required_TEST(518918);
-        System.out.println("We got required bits of " + myTest);
-		
-        //EXPECTED OUTPUT
-        // We got required bits of 402853643
-		 
+		BigInteger myTest = daa_Get_Bits_Required_TEST(518918);
+		System.out.println("We got required bits of " + myTest);
+
+		// EXPECTED OUTPUT
+		// We got required bits of 402853643
 
 	}
 
