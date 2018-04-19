@@ -1,0 +1,878 @@
+THE FOLLOWING OUTPUT IS FROM ELECTRON-CASH (PYTHON).
+THIS CAN HELP TO DEBUG PROBLEMS IMPLEMENTING IN JAVA
+OR ANOTHER LANGUAGE.  THE TEST BLOCK STARTS WITH
+DAA_STARTING_HEIGHT 518918.
+
+fore the loop, daa_starting_height is  518918
+...and daa_ending height is  519062
+we are in the loop, daa_i =  518919
+daa_bits for a block is  402850571
+bits to target bits  402850571
+size is  24
+word is  197387
+daa_work_for a block  1567909790519867411353
+we are in the loop, daa_i =  518920
+daa_bits for a block is  402849667
+bits to target bits  402849667
+size is  24
+word is  196483
+daa_work_for a block  1575123597569993682531
+we are in the loop, daa_i =  518921
+daa_bits for a block is  402849845
+bits to target bits  402849845
+size is  24
+word is  196661
+daa_work_for a block  1573697936150762320565
+we are in the loop, daa_i =  518922
+daa_bits for a block is  402850175
+bits to target bits  402850175
+size is  24
+word is  196991
+daa_work_for a block  1571061671961384371493
+we are in the loop, daa_i =  518923
+daa_bits for a block is  402847541
+bits to target bits  402847541
+size is  24
+word is  194357
+daa_work_for a block  1592353297392659223618
+we are in the loop, daa_i =  518924
+daa_bits for a block is  402850748
+bits to target bits  402850748
+size is  24
+word is  197564
+daa_work_for a block  1566505080993222797294
+we are in the loop, daa_i =  518925
+daa_bits for a block is  402850236
+bits to target bits  402850236
+size is  24
+word is  197052
+daa_work_for a block  1570575329463010112684
+we are in the loop, daa_i =  518926
+daa_bits for a block is  402846650
+bits to target bits  402846650
+size is  24
+word is  193466
+daa_work_for a block  1599686817432236510419
+we are in the loop, daa_i =  518927
+daa_bits for a block is  402845124
+bits to target bits  402845124
+size is  24
+word is  191940
+daa_work_for a block  1612404969372434452041
+we are in the loop, daa_i =  518928
+daa_bits for a block is  402844830
+bits to target bits  402844830
+size is  24
+word is  191646
+daa_work_for a block  1614878525100158984402
+we are in the loop, daa_i =  518929
+daa_bits for a block is  402847078
+bits to target bits  402847078
+size is  24
+word is  193894
+daa_work_for a block  1596155682080647512170
+we are in the loop, daa_i =  518930
+daa_bits for a block is  402847922
+bits to target bits  402847922
+size is  24
+word is  194738
+daa_work_for a block  1589237898208593436950
+we are in the loop, daa_i =  518931
+daa_bits for a block is  402846214
+bits to target bits  402846214
+size is  24
+word is  193030
+daa_work_for a block  1603300056060431377116
+we are in the loop, daa_i =  518932
+daa_bits for a block is  402845157
+bits to target bits  402845157
+size is  24
+word is  191973
+daa_work_for a block  1612127798291140257873
+we are in the loop, daa_i =  518933
+daa_bits for a block is  402845003
+bits to target bits  402845003
+size is  24
+word is  191819
+daa_work_for a block  1613422079258806837303
+we are in the loop, daa_i =  518934
+daa_bits for a block is  402841179
+bits to target bits  402841179
+size is  24
+word is  187995
+daa_work_for a block  1646240643747679825127
+we are in the loop, daa_i =  518935
+daa_bits for a block is  402842082
+bits to target bits  402842082
+size is  24
+word is  188898
+daa_work_for a block  1638371024687106632811
+we are in the loop, daa_i =  518936
+daa_bits for a block is  402843595
+bits to target bits  402843595
+size is  24
+word is  190411
+daa_work_for a block  1625352578482047091422
+we are in the loop, daa_i =  518937
+daa_bits for a block is  402842215
+bits to target bits  402842215
+size is  24
+word is  189031
+daa_work_for a block  1637218286002534339472
+we are in the loop, daa_i =  518938
+daa_bits for a block is  402845221
+bits to target bits  402845221
+size is  24
+word is  192037
+daa_work_for a block  1611590525895244503532
+we are in the loop, daa_i =  518939
+daa_bits for a block is  402845239
+bits to target bits  402845239
+size is  24
+word is  192055
+daa_work_for a block  1611439482551066458695
+we are in the loop, daa_i =  518940
+daa_bits for a block is  402845242
+bits to target bits  402845242
+size is  24
+word is  192058
+daa_work_for a block  1611414311412932909458
+we are in the loop, daa_i =  518941
+daa_bits for a block is  402848858
+bits to target bits  402848858
+size is  24
+word is  195674
+daa_work_for a block  1581635832156265363435
+we are in the loop, daa_i =  518942
+daa_bits for a block is  402847884
+bits to target bits  402847884
+size is  24
+word is  194700
+daa_work_for a block  1589548073042347553799
+we are in the loop, daa_i =  518943
+daa_bits for a block is  402847060
+bits to target bits  402847060
+size is  24
+word is  193876
+daa_work_for a block  1596303873720032746316
+we are in the loop, daa_i =  518944
+daa_bits for a block is  402846922
+bits to target bits  402846922
+size is  24
+word is  193738
+daa_work_for a block  1597440924451295402681
+we are in the loop, daa_i =  518945
+daa_bits for a block is  402848673
+bits to target bits  402848673
+size is  24
+word is  195489
+daa_work_for a block  1583132605012788794892
+we are in the loop, daa_i =  518946
+daa_bits for a block is  402848273
+bits to target bits  402848273
+size is  24
+word is  195089
+daa_work_for a block  1586378575016249346322
+we are in the loop, daa_i =  518947
+daa_bits for a block is  402850136
+bits to target bits  402850136
+size is  24
+word is  196952
+daa_work_for a block  1571372770123406051854
+we are in the loop, daa_i =  518948
+daa_bits for a block is  402853550
+bits to target bits  402853550
+size is  24
+word is  200366
+daa_work_for a block  1544598433972555566936
+we are in the loop, daa_i =  518949
+daa_bits for a block is  402852549
+bits to target bits  402852549
+size is  24
+word is  199365
+daa_work_for a block  1552353772333885429863
+we are in the loop, daa_i =  518950
+daa_bits for a block is  402853928
+bits to target bits  402853928
+size is  24
+word is  200744
+daa_work_for a block  1541689962446424643948
+we are in the loop, daa_i =  518951
+daa_bits for a block is  402857261
+bits to target bits  402857261
+size is  24
+word is  204077
+daa_work_for a block  1516510972923676204201
+we are in the loop, daa_i =  518952
+daa_bits for a block is  402857664
+bits to target bits  402857664
+size is  24
+word is  204480
+daa_work_for a block  1513522152882164850962
+we are in the loop, daa_i =  518953
+daa_bits for a block is  402857466
+bits to target bits  402857466
+size is  24
+word is  204282
+daa_work_for a block  1514989131794994511140
+we are in the loop, daa_i =  518954
+daa_bits for a block is  402855697
+bits to target bits  402855697
+size is  24
+word is  202513
+daa_work_for a block  1528222928016201768403
+we are in the loop, daa_i =  518955
+daa_bits for a block is  402856230
+bits to target bits  402856230
+size is  24
+word is  203046
+daa_work_for a block  1524211310842592657450
+we are in the loop, daa_i =  518956
+daa_bits for a block is  402855659
+bits to target bits  402855659
+size is  24
+word is  202475
+daa_work_for a block  1528509741061094301641
+we are in the loop, daa_i =  518957
+daa_bits for a block is  402855787
+bits to target bits  402855787
+size is  24
+word is  202603
+daa_work_for a block  1527544063125151496891
+we are in the loop, daa_i =  518958
+daa_bits for a block is  402855766
+bits to target bits  402855766
+size is  24
+word is  202582
+daa_work_for a block  1527702410980961135366
+we are in the loop, daa_i =  518959
+daa_bits for a block is  402856541
+bits to target bits  402856541
+size is  24
+word is  203357
+daa_work_for a block  1521880288464842954630
+we are in the loop, daa_i =  518960
+daa_bits for a block is  402856765
+bits to target bits  402856765
+size is  24
+word is  203581
+daa_work_for a block  1520205764886433747377
+we are in the loop, daa_i =  518961
+daa_bits for a block is  402858155
+bits to target bits  402858155
+size is  24
+word is  204971
+daa_work_for a block  1509896569862785802502
+we are in the loop, daa_i =  518962
+daa_bits for a block is  402858314
+bits to target bits  402858314
+size is  24
+word is  205130
+daa_work_for a block  1508726221524618869618
+we are in the loop, daa_i =  518963
+daa_bits for a block is  402858335
+bits to target bits  402858335
+size is  24
+word is  205151
+daa_work_for a block  1508571782839689149576
+we are in the loop, daa_i =  518964
+daa_bits for a block is  402858763
+bits to target bits  402858763
+size is  24
+word is  205579
+daa_work_for a block  1505431049967871566282
+we are in the loop, daa_i =  518965
+daa_bits for a block is  402859216
+bits to target bits  402859216
+size is  24
+word is  206032
+daa_work_for a block  1502121077411980026038
+we are in the loop, daa_i =  518966
+daa_bits for a block is  402862013
+bits to target bits  402862013
+size is  24
+word is  208829
+daa_work_for a block  1482002067822692579693
+we are in the loop, daa_i =  518967
+daa_bits for a block is  402862010
+bits to target bits  402862010
+size is  24
+word is  208826
+daa_work_for a block  1482023358304737287142
+we are in the loop, daa_i =  518968
+daa_bits for a block is  402862319
+bits to target bits  402862319
+size is  24
+word is  209135
+daa_work_for a block  1479833647267769951107
+we are in the loop, daa_i =  518969
+daa_bits for a block is  402860424
+bits to target bits  402860424
+size is  24
+word is  207240
+daa_work_for a block  1493365227858256459779
+we are in the loop, daa_i =  518970
+daa_bits for a block is  402861088
+bits to target bits  402861088
+size is  24
+word is  207904
+daa_work_for a block  1488595745254276342565
+we are in the loop, daa_i =  518971
+daa_bits for a block is  402856727
+bits to target bits  402856727
+size is  24
+word is  203543
+daa_work_for a block  1520489576263222359524
+we are in the loop, daa_i =  518972
+daa_bits for a block is  402857982
+bits to target bits  402857982
+size is  24
+word is  204798
+daa_work_for a block  1511172032057662031488
+we are in the loop, daa_i =  518973
+daa_bits for a block is  402857620
+bits to target bits  402857620
+size is  24
+word is  204436
+daa_work_for a block  1513847902626470233837
+we are in the loop, daa_i =  518974
+daa_bits for a block is  402860157
+bits to target bits  402860157
+size is  24
+word is  206973
+daa_work_for a block  1495291703851927878152
+we are in the loop, daa_i =  518975
+daa_bits for a block is  402859867
+bits to target bits  402859867
+size is  24
+word is  206683
+daa_work_for a block  1497389769944045077363
+we are in the loop, daa_i =  518976
+daa_bits for a block is  402861467
+bits to target bits  402861467
+size is  24
+word is  208283
+daa_work_for a block  1485887037450704420066
+we are in the loop, daa_i =  518977
+daa_bits for a block is  402861649
+bits to target bits  402861649
+size is  24
+word is  208465
+daa_work_for a block  1484589786397453139494
+we are in the loop, daa_i =  518978
+daa_bits for a block is  402860259
+bits to target bits  402860259
+size is  24
+word is  207075
+daa_work_for a block  1494555160310733158154
+we are in the loop, daa_i =  518979
+daa_bits for a block is  402856941
+bits to target bits  402856941
+size is  24
+word is  203757
+daa_work_for a block  1518892650664002064835
+we are in the loop, daa_i =  518980
+daa_bits for a block is  402852423
+bits to target bits  402852423
+size is  24
+word is  199239
+daa_work_for a block  1553335490648643431882
+we are in the loop, daa_i =  518981
+daa_bits for a block is  402851693
+bits to target bits  402851693
+size is  24
+word is  198509
+daa_work_for a block  1559047750083598570970
+we are in the loop, daa_i =  518982
+daa_bits for a block is  402848428
+bits to target bits  402848428
+size is  24
+word is  195244
+daa_work_for a block  1585119183285248554243
+we are in the loop, daa_i =  518983
+daa_bits for a block is  402847960
+bits to target bits  402847960
+size is  24
+word is  194776
+daa_work_for a block  1588927844402519143656
+we are in the loop, daa_i =  518984
+daa_bits for a block is  402848427
+bits to target bits  402848427
+size is  24
+word is  195243
+daa_work_for a block  1585127301984424889623
+we are in the loop, daa_i =  518985
+daa_bits for a block is  402847766
+bits to target bits  402847766
+size is  24
+word is  194582
+daa_work_for a block  1590512019720966321267
+we are in the loop, daa_i =  518986
+daa_bits for a block is  402847744
+bits to target bits  402847744
+size is  24
+word is  194560
+daa_work_for a block  1590691867913985756192
+we are in the loop, daa_i =  518987
+daa_bits for a block is  402851272
+bits to target bits  402851272
+size is  24
+word is  198088
+daa_work_for a block  1562361222392800516562
+we are in the loop, daa_i =  518988
+daa_bits for a block is  402852111
+bits to target bits  402852111
+size is  24
+word is  198927
+daa_work_for a block  1555771764623932742788
+we are in the loop, daa_i =  518989
+daa_bits for a block is  402852058
+bits to target bits  402852058
+size is  24
+word is  198874
+daa_work_for a block  1556186378417214259907
+we are in the loop, daa_i =  518990
+daa_bits for a block is  402851413
+bits to target bits  402851413
+size is  24
+word is  198229
+daa_work_for a block  1561249917122848164117
+we are in the loop, daa_i =  518991
+daa_bits for a block is  402850747
+bits to target bits  402850747
+size is  24
+word is  197563
+daa_work_for a block  1566513010135223036321
+we are in the loop, daa_i =  518992
+daa_bits for a block is  402849667
+bits to target bits  402849667
+size is  24
+word is  196483
+daa_work_for a block  1575123597569993682531
+we are in the loop, daa_i =  518993
+daa_bits for a block is  402852283
+bits to target bits  402852283
+size is  24
+word is  199099
+daa_work_for a block  1554427746102918993690
+we are in the loop, daa_i =  518994
+daa_bits for a block is  402858248
+bits to target bits  402858248
+size is  24
+word is  205064
+daa_work_for a block  1509211806174389794038
+we are in the loop, daa_i =  518995
+daa_bits for a block is  402854791
+bits to target bits  402854791
+size is  24
+word is  201607
+daa_work_for a block  1535090596166527296794
+we are in the loop, daa_i =  518996
+daa_bits for a block is  402855613
+bits to target bits  402855613
+size is  24
+word is  202429
+daa_work_for a block  1528857079871683744546
+we are in the loop, daa_i =  518997
+daa_bits for a block is  402854975
+bits to target bits  402854975
+size is  24
+word is  201791
+daa_work_for a block  1533690847566764963376
+we are in the loop, daa_i =  518998
+daa_bits for a block is  402856162
+bits to target bits  402856162
+size is  24
+word is  202978
+daa_work_for a block  1524721939428632998279
+we are in the loop, daa_i =  518999
+daa_bits for a block is  402857149
+bits to target bits  402857149
+size is  24
+word is  203965
+daa_work_for a block  1517343710054887204788
+we are in the loop, daa_i =  519000
+daa_bits for a block is  402852396
+bits to target bits  402852396
+size is  24
+word is  199212
+daa_work_for a block  1553546020427208545292
+we are in the loop, daa_i =  519001
+daa_bits for a block is  402850208
+bits to target bits  402850208
+size is  24
+word is  197024
+daa_work_for a block  1570798531251751404523
+we are in the loop, daa_i =  519002
+daa_bits for a block is  402850571
+bits to target bits  402850571
+size is  24
+word is  197387
+daa_work_for a block  1567909790519867411353
+we are in the loop, daa_i =  519003
+daa_bits for a block is  402849638
+bits to target bits  402849638
+size is  24
+word is  196454
+daa_work_for a block  1575356112990038730312
+we are in the loop, daa_i =  519004
+daa_bits for a block is  402848460
+bits to target bits  402848460
+size is  24
+word is  195276
+daa_work_for a block  1584859428815343763313
+we are in the loop, daa_i =  519005
+daa_bits for a block is  402849367
+bits to target bits  402849367
+size is  24
+word is  196183
+daa_work_for a block  1577532252138794231532
+we are in the loop, daa_i =  519006
+daa_bits for a block is  402850743
+bits to target bits  402850743
+size is  24
+word is  197559
+daa_work_for a block  1566544727505935283762
+we are in the loop, daa_i =  519007
+daa_bits for a block is  402856312
+bits to target bits  402856312
+size is  24
+word is  203128
+daa_work_for a block  1523596007548664234988
+we are in the loop, daa_i =  519008
+daa_bits for a block is  402859694
+bits to target bits  402859694
+size is  24
+word is  206510
+daa_work_for a block  1498644181014696957652
+we are in the loop, daa_i =  519009
+daa_bits for a block is  402859122
+bits to target bits  402859122
+size is  24
+word is  205938
+daa_work_for a block  1502806717659417245601
+we are in the loop, daa_i =  519010
+daa_bits for a block is  402859028
+bits to target bits  402859028
+size is  24
+word is  205844
+daa_work_for a block  1503492984111001869011
+we are in the loop, daa_i =  519011
+daa_bits for a block is  402856837
+bits to target bits  402856837
+size is  24
+word is  203653
+daa_work_for a block  1519668307470771698549
+we are in the loop, daa_i =  519012
+daa_bits for a block is  402854375
+bits to target bits  402854375
+size is  24
+word is  201191
+daa_work_for a block  1538264682919937118085
+we are in the loop, daa_i =  519013
+daa_bits for a block is  402854126
+bits to target bits  402854126
+size is  24
+word is  200942
+daa_work_for a block  1540170844429462574896
+we are in the loop, daa_i =  519014
+daa_bits for a block is  402857439
+bits to target bits  402857439
+size is  24
+word is  204255
+daa_work_for a block  1515189394733764503805
+we are in the loop, daa_i =  519015
+daa_bits for a block is  402858400
+bits to target bits  402858400
+size is  24
+word is  205216
+daa_work_for a block  1508093958664748697590
+we are in the loop, daa_i =  519016
+daa_bits for a block is  402857081
+bits to target bits  402857081
+size is  24
+word is  203897
+daa_work_for a block  1517849746790512213150
+we are in the loop, daa_i =  519017
+daa_bits for a block is  402857843
+bits to target bits  402857843
+size is  24
+word is  204659
+daa_work_for a block  1512198387666044829324
+we are in the loop, daa_i =  519018
+daa_bits for a block is  402854970
+bits to target bits  402854970
+size is  24
+word is  201786
+daa_work_for a block  1533728850472010291718
+we are in the loop, daa_i =  519019
+daa_bits for a block is  402854958
+bits to target bits  402854958
+size is  24
+word is  201774
+daa_work_for a block  1533820065129030840072
+we are in the loop, daa_i =  519020
+daa_bits for a block is  402854551
+bits to target bits  402854551
+size is  24
+word is  201367
+daa_work_for a block  1536920199542849964119
+we are in the loop, daa_i =  519021
+daa_bits for a block is  402857584
+bits to target bits  402857584
+size is  24
+word is  204400
+daa_work_for a block  1514114529458635365581
+we are in the loop, daa_i =  519022
+daa_bits for a block is  402857683
+bits to target bits  402857683
+size is  24
+word is  204499
+daa_work_for a block  1513381531554408915079
+we are in the loop, daa_i =  519023
+daa_bits for a block is  402861209
+bits to target bits  402861209
+size is  24
+word is  208025
+daa_work_for a block  1487729887375772473139
+we are in the loop, daa_i =  519024
+daa_bits for a block is  402860687
+bits to target bits  402860687
+size is  24
+word is  207503
+daa_work_for a block  1491472459778148117014
+we are in the loop, daa_i =  519025
+daa_bits for a block is  402861031
+bits to target bits  402861031
+size is  24
+word is  207847
+daa_work_for a block  1489003978028766682823
+we are in the loop, daa_i =  519026
+daa_bits for a block is  402860969
+bits to target bits  402860969
+size is  24
+word is  207785
+daa_work_for a block  1489448275002262284210
+we are in the loop, daa_i =  519027
+daa_bits for a block is  402857544
+bits to target bits  402857544
+size is  24
+word is  204360
+daa_work_for a block  1514410891668355200258
+we are in the loop, daa_i =  519028
+daa_bits for a block is  402855738
+bits to target bits  402855738
+size is  24
+word is  202554
+daa_work_for a block  1527913592530115765301
+we are in the loop, daa_i =  519029
+daa_bits for a block is  402852201
+bits to target bits  402852201
+size is  24
+word is  199017
+daa_work_for a block  1555068209355708651646
+we are in the loop, daa_i =  519030
+daa_bits for a block is  402852064
+bits to target bits  402852064
+size is  24
+word is  198880
+daa_work_for a block  1556139429914245116275
+we are in the loop, daa_i =  519031
+daa_bits for a block is  402849891
+bits to target bits  402849891
+size is  24
+word is  196707
+daa_work_for a block  1573329926343978957153
+we are in the loop, daa_i =  519032
+daa_bits for a block is  402847779
+bits to target bits  402847779
+size is  24
+word is  194595
+daa_work_for a block  1590405764903235276984
+we are in the loop, daa_i =  519033
+daa_bits for a block is  402847692
+bits to target bits  402847692
+size is  24
+word is  194508
+daa_work_for a block  1591117125369368194237
+we are in the loop, daa_i =  519034
+daa_bits for a block is  402846846
+bits to target bits  402846846
+size is  24
+word is  193662
+daa_work_for a block  1598067818267626425033
+we are in the loop, daa_i =  519035
+daa_bits for a block is  402851636
+bits to target bits  402851636
+size is  24
+word is  198452
+daa_work_for a block  1559495544622100400725
+we are in the loop, daa_i =  519036
+daa_bits for a block is  402855076
+bits to target bits  402855076
+size is  24
+word is  201892
+daa_work_for a block  1532923591927095024690
+we are in the loop, daa_i =  519037
+daa_bits for a block is  402852416
+bits to target bits  402852416
+size is  24
+word is  199232
+daa_work_for a block  1553390066963866591334
+we are in the loop, daa_i =  519038
+daa_bits for a block is  402852294
+bits to target bits  402852294
+size is  24
+word is  199110
+daa_work_for a block  1554341870430139464239
+we are in the loop, daa_i =  519039
+daa_bits for a block is  402852901
+bits to target bits  402852901
+size is  24
+word is  199717
+daa_work_for a block  1549617758234627341311
+we are in the loop, daa_i =  519040
+daa_bits for a block is  402852562
+bits to target bits  402852562
+size is  24
+word is  199378
+daa_work_for a block  1552252554551380135846
+we are in the loop, daa_i =  519041
+daa_bits for a block is  402852253
+bits to target bits  402852253
+size is  24
+word is  199069
+daa_work_for a block  1554662000720077303471
+we are in the loop, daa_i =  519042
+daa_bits for a block is  402856057
+bits to target bits  402856057
+size is  24
+word is  202873
+daa_work_for a block  1525511082407935352288
+we are in the loop, daa_i =  519043
+daa_bits for a block is  402856559
+bits to target bits  402856559
+size is  24
+word is  203375
+daa_work_for a block  1521745592237713921203
+we are in the loop, daa_i =  519044
+daa_bits for a block is  402855837
+bits to target bits  402855837
+size is  24
+word is  202653
+daa_work_for a block  1527167176510316001859
+we are in the loop, daa_i =  519045
+daa_bits for a block is  402856030
+bits to target bits  402856030
+size is  24
+word is  202846
+daa_work_for a block  1525714136938096234211
+we are in the loop, daa_i =  519046
+daa_bits for a block is  402860639
+bits to target bits  402860639
+size is  24
+word is  207455
+daa_work_for a block  1491817549932973747197
+we are in the loop, daa_i =  519047
+daa_bits for a block is  402854140
+bits to target bits  402854140
+size is  24
+word is  200956
+daa_work_for a block  1540063545359904997734
+we are in the loop, daa_i =  519048
+daa_bits for a block is  402854607
+bits to target bits  402854607
+size is  24
+word is  201423
+daa_work_for a block  1536492902108225320468
+we are in the loop, daa_i =  519049
+daa_bits for a block is  402854613
+bits to target bits  402854613
+size is  24
+word is  201429
+daa_work_for a block  1536447134331923748441
+we are in the loop, daa_i =  519050
+daa_bits for a block is  402853823
+bits to target bits  402853823
+size is  24
+word is  200639
+daa_work_for a block  1542496771920439539295
+we are in the loop, daa_i =  519051
+daa_bits for a block is  402854390
+bits to target bits  402854390
+size is  24
+word is  201206
+daa_work_for a block  1538150004579113290482
+we are in the loop, daa_i =  519052
+daa_bits for a block is  402854838
+bits to target bits  402854838
+size is  24
+word is  201654
+daa_work_for a block  1534732808778130206813
+we are in the loop, daa_i =  519053
+daa_bits for a block is  402854500
+bits to target bits  402854500
+size is  24
+word is  201316
+daa_work_for a block  1537309552252901253376
+we are in the loop, daa_i =  519054
+daa_bits for a block is  402852587
+bits to target bits  402852587
+size is  24
+word is  199403
+daa_work_for a block  1552057942063785744069
+we are in the loop, daa_i =  519055
+daa_bits for a block is  402850866
+bits to target bits  402850866
+size is  24
+word is  197682
+daa_work_for a block  1565570005470124081731
+we are in the loop, daa_i =  519056
+daa_bits for a block is  402848092
+bits to target bits  402848092
+size is  24
+word is  194908
+daa_work_for a block  1587851754783513599876
+we are in the loop, daa_i =  519057
+daa_bits for a block is  402848060
+bits to target bits  402848060
+size is  24
+word is  194876
+daa_work_for a block  1588112491129462164272
+we are in the loop, daa_i =  519058
+daa_bits for a block is  402847792
+bits to target bits  402847792
+size is  24
+word is  194608
+daa_work_for a block  1590299524281350554575
+we are in the loop, daa_i =  519059
+daa_bits for a block is  402850611
+bits to target bits  402850611
+size is  24
+word is  197427
+daa_work_for a block  1567592121753078701113
+we are in the loop, daa_i =  519060
+daa_bits for a block is  402854104
+bits to target bits  402854104
+size is  24
+word is  200920
+daa_work_for a block  1540339487464389153517
+we are in the loop, daa_i =  519061
+daa_bits for a block is  402854142
+bits to target bits  402854142
+size is  24
+word is  200958
+daa_work_for a block  1540048218141825997097
+we are in the loop, daa_i =  519062
+daa_bits for a block is  402853955
+bits to target bits  402853955
+size is  24
+word is  200771
+daa_work_for a block  1541482633554373234803
+daa_cumulative_work  222884094846036770978637
+daa_starting timestamp  1519555872
+daa_ending timestamp  1519642492
+elapsed  86620
+daa_Wn  1543875050884577032869
+daa_target  75000945945056940454555735921855711599154439895197440042
+daa_retval  402853643
