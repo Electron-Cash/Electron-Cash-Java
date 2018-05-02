@@ -1,40 +1,37 @@
-package electrol1;
+package electrol.main;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 
 import electrol.httpsclient.HttpsConnectionUtils;
 
 public class ReadNonblockingMessage extends Thread{
 	
-	private Thread thread;
-	
-	public ReadNonblockingMessage() {
-		//start();
+	private final int READ_TIMEOUT = 1000;
+	private String result ;
+	private boolean check = true;
+	private long currentTime;
+	Thread t;
+	public ReadNonblockingMessage(InputStream stream) throws IOException,InterruptedException  {
+		currentTime = new Date().getTime();
+		t = Thread.currentThread();
+		start();
+		result =  HttpsConnectionUtils.readLine(stream);
+		check = false;
+		
 	}
 	
-	public String read(InputStream is) throws IOException {
-		try {
-			
-			thread = Thread.currentThread();
-			System.out.println("name "+thread.getName());
-			return HttpsConnectionUtils.readLine(is);
-		}
-		catch (Exception e) {
-			System.out.println("returning ");
-			e.printStackTrace();
-			return "";
-		}
+	public String read() {
+		return result;
 	}
 	
 	public void run() {
-		try {
-			System.out.println("name1 "+getName());
-			sleep(10000);
-			if(thread.isAlive())
-				thread.interrupt();
-		} catch (InterruptedException e) {
-			
+		while(new Date().getTime()-currentTime < READ_TIMEOUT ) {
+			if(!check) {
+				return;
+			}
 		}
+		t.interrupt();
 	}
 }

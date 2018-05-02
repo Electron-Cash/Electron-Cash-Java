@@ -1,4 +1,4 @@
-package electrol1;
+package electrol.main;
 
 import electrol.util.Server;
 

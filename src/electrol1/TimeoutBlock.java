@@ -1,4 +1,4 @@
-package electrol1;
+package electrol.main;
 
 public class TimeoutBlock {
 
@@ -15,27 +15,19 @@ public class TimeoutBlock {
 	        timeoutWorker.start();
 	        do{ 
 	            if(collectIntervals>=this.timeoutMilliSeconds){
-	            	timeoutWorker = null;
-	            	//return;
+	            	
 	            	throw new Exception("<<<<<<<<<<****>>>>>>>>>>> Timeout Block Execution Time Exceeded In "+timeoutMilliSeconds+" Milli Seconds. Thread Block Terminated.");
 	            }
 	            collectIntervals+=timeoutInteval;           
 	            Thread.sleep(timeoutInteval);
 
 	        }while(timeoutWorker.isAlive());
-	        //System.out.println("<<<<<<<<<<####>>>>>>>>>>> Timeout Block Executed Within "+collectIntervals+" Milli Seconds.");
 	    }
 
-	    /**
-	     * @return the timeoutInteval
-	     */
 	    public long getTimeoutInteval() {
 	        return timeoutInteval;
 	    }
 
-	    /**
-	     * @param timeoutInteval the timeoutInteval to set
-	     */
 	    public void setTimeoutInteval(long timeoutInteval) {
 	        this.timeoutInteval = timeoutInteval;
 	    }

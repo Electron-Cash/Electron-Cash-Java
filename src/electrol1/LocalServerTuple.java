@@ -1,4 +1,4 @@
-package electrol1;
+package electrol.main;
 
 public class LocalServerTuple {
 	private int local_height;

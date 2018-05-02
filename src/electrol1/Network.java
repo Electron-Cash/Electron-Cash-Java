@@ -1,4 +1,4 @@
-package electrol1;
+package electrol.main;
 
 import java.io.IOException;
 import java.util.Date;
@@ -9,7 +9,6 @@ import org.json.me.JSONArray;
 import org.json.me.JSONException;
 import org.json.me.JSONObject;
 
-import electrol.INetwork;
 import electrol.Version;
 import electrol.java.util.ArrayList;
 import electrol.java.util.HashMap;
@@ -27,11 +26,12 @@ import electrol.util.StringUtils;
 
 
 
-public class Network extends Thread implements INetwork{
+public class Network extends Thread{
 	private static int[] FEE_TARGETS = new int[] {25, 10, 5, 2};
+	private static final int NODES_RETRY_INTERVAL = 60;
 	private static int COIN = 100000000;
 
-	private Set disconnectedServer;
+	private Set disconnected_server;
 	private Set connecting;
 	private Random random;
 	private JSONArray recent_servers;
@@ -40,7 +40,7 @@ public class Network extends Thread implements INetwork{
 	private String protocol = "s";
 	private String default_protocol = "s";
 	private Map interfaces = new HashMap(); //["Server","TcpConnection"]
-	private Queue socketQueue= new Queue(10);
+	private Queue socketQueue= new Queue(5);
 	private Map blockchains;
 	private boolean downloadingHeaders = false;
 	private TcpConnection tcpConnection;
@@ -52,54 +52,58 @@ public class Network extends Thread implements INetwork{
 	private Config config;
 	private Integer blockchain_index;
 	private Map subscriptions = new HashMap();
-
+	private Interface interface1;
+	private long nodes_retry_time;
 	private String banner;
 
 	private String donation_address;
 	private int relay_fee;
 	private String connection_status;
+	private int num_servers = 5;
 
 	public Network(){
 		blockchains = BlockchainsUtil.read_blockchain();
 		connecting = new HashSet();
-		disconnectedServer = new HashSet();
+		disconnected_server = new HashSet();
 		random = new Random();
 		date = new Date();
 		config = new Config();
+		nodes_retry_time = date.getTime();
 		try {
 			recent_servers = read_recent_servers();
-			default_server = pickRandomServer(null);
-			startNetwork(default_server.getProtocol(),default_server,10);
+			default_server = pick_random_server();
+			startNetwork(default_server.getProtocol());
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
 
 
 	}
-	public void startNetwork(String protocol,Server default_server,int num_servers) throws JSONException {
-		disconnectedServer = new HashSet();
+	public void startNetwork(String protocol) throws JSONException {
+		disconnected_server = new HashSet();
 		this.protocol = protocol;
-		startInterfaces(default_server,num_servers);
+		startInterfaces();
 	}
 
 
-	private void startInterfaces(Server defaultServer, int num_servers) throws JSONException {
-		startInterface(defaultServer);
+	private void startInterfaces() throws JSONException {
+		startInterface(default_server);
 		for(int i=0;i<num_servers-1;i++) {
 			start_random_interface();
 		}
 
 	}
 	private void start_random_interface() throws JSONException{
-		JSONObject servers = get_servers();
-		Enumeration enumeration = servers.keys();
-		while (enumeration.hasMoreElements()) {
-			String key = (String) enumeration.nextElement();
-			if (disconnectedServer.contains(key) || interfaces.containsKey(key)) {
-				servers.remove(key);
+
+		Iterator iterator = interfaces.keySet().iterator();
+		Set exclude = disconnected_server;
+		while (iterator.hasNext()) {
+			Server server = (Server)iterator.next();
+			if(!disconnected_server.contains(server)) {
+				exclude.add(server);
 			}
 		}
-		Server server = pickRandomServer(servers);
+		Server server = pick_random_server(get_servers(),protocol, exclude);
 		if(server != null) {
 			startInterface(server);
 		}
@@ -140,7 +144,7 @@ public class Network extends Thread implements INetwork{
 			filterVersion(irc_servers);
 		}
 		else {
-			JSONArray servers = read_recent_servers();
+			JSONArray servers = recent_servers;
 			for(int i=0;i<servers.length();i++) {
 				Server server = deserialize_server(servers.getString(i));
 				if(!out.has(server.getHost())) {
@@ -196,34 +200,39 @@ public class Network extends Thread implements INetwork{
 		// TODO Auto-generated method stub
 
 	}
-	public Server pickRandomServer(JSONObject default_servers) throws JSONException {
+	
+	public Server pick_random_server() throws JSONException {
+		return pick_random_server(null, "s", new HashSet());
+	}
+	
+	public Server pick_random_server(JSONObject default_servers, String protocol, Set exclude) throws JSONException {
 		if(default_servers == null) {
 			default_servers = BitcoinMainnet.getDefaultServers();
 		}
 
-		List filter = new ArrayList();
+		List eligible = new ArrayList();
 		Enumeration enumeration = default_servers.keys();
 		while(enumeration.hasMoreElements()) {
 			String server = (String)enumeration.nextElement();
 			JSONObject item = default_servers.getJSONObject(server);
-			if(item.has(default_protocol)) {
-				int port = item.getInt(default_protocol);
-				filter.add(new Server(server, port, default_protocol));
+			if(item.has(protocol)) {
+				int port = item.getInt(protocol);
+				Server sObject = new Server(server, port, default_protocol);
+				if(!exclude.contains(sObject)) {
+					eligible.add(sObject);
+				}
 			}
 		}
-		return (Server)filter.get(random.nextInt(filter.size()));
+		
+		return (Server)eligible.get(random.nextInt(eligible.size()));
 	}
 
-	public JSONArray read_recent_servers() {
-		try {
-			String json = Files.read("recent-servers");
-			if(json != null)
-				return new JSONArray(json);
-		}
-		catch(JSONException jsonEx) {
-			jsonEx.printStackTrace();
-		} 
-		return new JSONArray();
+	public JSONArray read_recent_servers() throws JSONException {
+		if(!Files.isExist("recent-servers"))
+			return new JSONArray();
+		String json = Files.read("recent-servers");
+		return new JSONArray(json);
+		
 	}
 	public void init_header_file() throws JSONException {
 		Blockchain b = (Blockchain)blockchains.get(new Integer(0));
@@ -239,18 +248,24 @@ public class Network extends Thread implements INetwork{
 	}
 
 	public void run() {
-
+		try {
+			init_header_file();
+			while(isDownloadingHeaders()) {
+				System.out.println("wait for header download");
+				try {
+					Thread.sleep(1000);
+				}catch (Exception e) {}
+			}
+		} catch (JSONException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		while(true) {
 			try {
-				init_header_file();
-				while(isDownloadingHeaders()) {
-					System.out.println("wait for header download");
-					try {
-						Thread.sleep(1000);
-					}catch (Exception e) {}
-				}
 				maintainSockets();
 				waitOnSockets();
+				maintain_requests();
+				process_pending_sends();
 
 			}catch(Exception e) {
 				e.printStackTrace();
@@ -261,17 +276,18 @@ public class Network extends Thread implements INetwork{
 	}
 
 	private void waitOnSockets() throws JSONException, ClassCastException, IllegalArgumentException, NullPointerException, RuntimeException, IOException {
-		Iterator it = interfaces.values().iterator();
-		while (it.hasNext()) {
-			TcpConnection type = (TcpConnection) it.next();
-			type.send_requests();
-			processResponses(type);
-
+		Object[] arr = interfaces.values().toArray();
+		for(int i=0;i<arr.length;i++) {
+			Interface inter = (Interface)arr[i];
+			if(inter.num_requests() > 0)
+				inter.send_requests();
 		}
-	}
-	private void processResponses(TcpConnection connection) throws JSONException, ClassCastException, IllegalArgumentException, NullPointerException, RuntimeException, IOException{
-		List responses = connection.get_responses();
-		System.out.println("responses size "+responses.size());
+		for(int i=0;i<arr.length;i++) {
+			processResponses(((Interface)arr[i]));
+		}
+	} 
+	private void processResponses(Interface interface1) throws JSONException, ClassCastException, IllegalArgumentException, NullPointerException, RuntimeException, IOException{
+		List responses = interface1.get_responses();
 		Iterator it = responses.iterator();
 		while(it.hasNext()) {
 			Set callbacks = new HashSet();
@@ -303,7 +319,7 @@ public class Network extends Thread implements INetwork{
 			}
 			else {
 				if(response == null) {  //# Closed remotely / misbehaving
-					connection_down(connection.getServer());
+					connection_down(interface1.getServer());
 					break;
 				}
 				String method = response.optString("method");
@@ -325,14 +341,13 @@ public class Network extends Thread implements INetwork{
 			if(request!= null && request.getMethod()!= null && request.getMethod().endsWith(".subscribe")){
 				sub_cache.put(k, response);
 			}
-			process_response(tcpConnection, response, callbacks);
+			process_response(interface1, response, callbacks);
 		}
 	}
-	private void process_response(TcpConnection tcpConnection, JSONObject response, Set callbacks) throws JSONException, ClassCastException, IllegalArgumentException, NullPointerException, RuntimeException, IOException {
+	private void process_response(Interface tcpConnection, JSONObject response, Set callbacks) throws JSONException, ClassCastException, IllegalArgumentException, NullPointerException, RuntimeException, IOException {
 		String error = response.optString("error");
 		String method = response.optString("method");
 		JSONArray params = response.optJSONArray("params");
-
 		// We handle some responses; return the rest to the client.
 		if("server.version".equals(method)) {
 			JSONArray result = response.optJSONArray("result");
@@ -407,147 +422,147 @@ public class Network extends Thread implements INetwork{
 		this.connection_status = status;
 		notify("status");
 	}
-	public void on_get_chunk(TcpConnection connection,JSONObject response) throws JSONException {
+	public void on_get_chunk(Interface interface1,JSONObject response) throws JSONException {
 		//Handle receiving a chunk of block headers
 		String error = response.optString("error");
 		String result = response.optString("result");
 		JSONArray params = response.optJSONArray("params");
-		if(result == null || params == null || error != null){
+		
+		if(result == null || params == null || error.length()>0){
 			System.out.println("bad response");
 			return;
 		}
 		int index = params.getInt(0);
-		if(connection.getRequest().intValue() != index) {
+		if(interface1.getRequest() != index) {
 			return;
 		}
-		boolean connect = connection.getBlockchain().connect_chunk(index, result);
+		boolean connect = interface1.getBlockchain().connect_chunk(index, result);
+		
 		if(!connect) {
-			connection_down(connection.getServer());
+			connection_down(interface1.getServer());
 			return;
 		}
-		if(connection.getBlockchain().height() < connection.getTip()) {
-			request_chunk(connection, new Integer(index+1));
+		if(interface1.getBlockchain().height() < interface1.getTip()) {
+			request_chunk(interface1, index+1);
 		}
 		else {
-			connection.setRequest(new Integer(0));
-			connection.setMode("default");
-			System.out.println("catch up done" + connection.getBlockchain().height());
-			connection.getBlockchain().set_catch_up(null);
+			interface1.setRequest(0);
+			interface1.setMode("default");
+			System.out.println("catch up done" + interface1.getBlockchain().height());
+			interface1.getBlockchain().set_catch_up(null);
 		}
 		notify("updated");
 	}
 
-	public void on_get_header(TcpConnection connection,JSONObject response) throws ClassCastException, IllegalArgumentException, NullPointerException, JSONException, RuntimeException, IOException {
+	public void on_get_header(Interface interface1,JSONObject response) throws ClassCastException, IllegalArgumentException, NullPointerException, JSONException, RuntimeException, IOException {
 		//Handle receiving a single block header'''
+		System.out.println("On get header ");
 		JSONObject header = response.optJSONObject("result");
-		System.out.println("get header "+header);
 		if(header == null) {
-			System.out.println("response "+response);
-			connection_down(connection.getServer());
+			connection_down(interface1.getServer());
 			return;
 		}
 		int height = header.optInt("block_height");
-		if(connection.getRequest().intValue() != height){
-			System.out.println("unsolicited header "+connection.getRequest()+" "+height);
-			connection_down(connection.getServer());
+		if(interface1.getRequest() != height){
+			System.out.println("unsolicited header "+interface1.getRequest()+" "+height);
+			connection_down(interface1.getServer());
 			return;
 		}
-		System.out.println("connection mode "+connection.getMode()+" "+header);
-		Blockchain chain = BlockchainsUtil.check_header(blockchains,header);
+		Blockchain chain = BlockchainsUtil.check_header(header);
 		int next_height = 0;
-		if("backward".equals(connection.getMode())) {
+		if("backward".equals(interface1.getMode())) {
 			if(chain != null) {
 				System.out.println("binary search");
-				connection.setMode("binary");
-				connection.setBlockchain(chain);
-				connection.setGood(height);
-				next_height = (connection.getBad() + connection.getGood()) / 2;
+				interface1.setMode("binary");
+				interface1.setBlockchain(chain);
+				interface1.setGood(height);
+				next_height = (interface1.getBad() + interface1.getGood()) / 2;
 			}
 			else {
 				if(height == 0) {
-					connection_down(connection.getServer());
+					connection_down(interface1.getServer());
 					next_height = 0;
 				}
 				else {
-					tcpConnection.setBad(height);
-					tcpConnection.setBad_header(header);
-					int delta = tcpConnection.getTip() - height;
-					next_height = Math.max(0, connection.getTip() - 2 * delta);
+					interface1.setBad(height);
+					interface1.setBad_header(header);
+					int delta = interface1.getTip() - height;
+					next_height = Math.max(0, interface1.getTip() - 2 * delta);
 				}
 			}
 		}
-		else if("binary".equals(connection.getMode())) {
+		else if("binary".equals(interface1.getMode())) {
 			if(chain != null) {
-				connection.setGood(height);
-				connection.setBlockchain(chain);
+				interface1.setGood(height);
+				interface1.setBlockchain(chain);
 			}
 			else {
-				connection.setBad(height);
-				connection.setBad_header(header);
+				interface1.setBad(height);
+				interface1.setBad_header(header);
 			}
-			if(connection.getBad() != connection.getGood() + 1) {
-				next_height = (connection.getBad() + connection.getGood()) / 2;
+			System.out.println("good and bad "+interface1.getBad()+" "+interface1.getGood());
+			if(interface1.getBad() != interface1.getGood() + 1) {
+				next_height = (interface1.getBad() + interface1.getGood()) / 2;
 			}
-			else if(!connection.getBlockchain().can_connect(connection.getBad_header(), false)){
-				connection_down(connection.getServer());
+			else if(!interface1.getBlockchain().can_connect(interface1.getBad_header(), false)){
+				connection_down(interface1.getServer());
 				next_height = 0;
 			}
 			else {
-				Blockchain branch = (Blockchain)blockchains.get(new Integer(connection.getBad()));
+				
+				Blockchain branch = (Blockchain)blockchains.get(new Integer(interface1.getBad()));
 				if(branch  != null){
-					if(branch.check_header(connection.getBad_header())) {
-						System.out.println("joining chain" + connection.getBad());
+					if(branch.check_header(interface1.getBad_header())) {
+						System.out.println("joining chain" + interface1.getBad());
 						next_height = 0;
 					}
 					else if(branch.parent().check_header(header)) {
-						System.out.println("reorg" + connection.getBad() +" "+ connection.getTip());
-						connection.setBlockchain(branch.parent());
+						interface1.setBlockchain(branch.parent());
 						next_height = 0;
 					}
 					else{
 						System.out.println("checkpoint conflicts with existing fork"+ branch.getPath());
 						// branch.write('', 0);
-						branch.save_header(connection.getBad_header());
-						connection.setMode("catch_up");
-						connection.setBlockchain(branch);
-						next_height = connection.getBad()+1;
-						connection.getBlockchain().set_catch_up(connection.getServer());
+						branch.save_header(interface1.getBad_header());
+						interface1.setMode("catch_up");
+						interface1.setBlockchain(branch);
+						next_height = interface1.getBad()+1;
+						interface1.getBlockchain().set_catch_up(interface1.getServer());
 					}
 				}
 				else {
-					int bh = connection.getBlockchain().height();
+					int bh = interface1.getBlockchain().height();
 					next_height = 0;
-					if(bh > connection.getGood()){
-						if(connection.getBlockchain().check_header(connection.getBad_header())){
-							Blockchain parent =  connection.getBlockchain();
-							Blockchain b = connection.getBlockchain().fork(parent,connection.getBad_header());
-							blockchains.put(new Integer(connection.getBad()),b);
-							connection.setBlockchain(b);
+					if(bh > interface1.getGood()){
+						if(interface1.getBlockchain().check_header(interface1.getBad_header())){
+							Blockchain parent =  interface1.getBlockchain();
+							Blockchain b = interface1.getBlockchain().fork(parent,interface1.getBad_header());
+							blockchains.put(new Integer(interface1.getBad()),b);
+							interface1.setBlockchain(b);
 							System.out.println("new chain "+b.get_checkpoint());
-							connection.setMode("catch_up");
-							next_height = connection.getBad() + 1;
-							connection.getBlockchain().set_catch_up(connection.getServer());
+							interface1.setMode("catch_up");
+							next_height = interface1.getBad() + 1;
+							interface1.getBlockchain().set_catch_up(interface1.getServer());
 						}
 					}
 					else
 					{
-						//assert bh == inter.getGood();
-						if(connection.getBlockchain().get_catch_up() == null && bh < connection.getTip()) {
+						if(interface1.getBlockchain().get_catch_up() == null && bh < interface1.getTip()) {
 							System.out.println("catching up from "+ (bh + 1));
-							connection.setMode("catch_up");
-							next_height = connection.getBad() + 1;
-							connection.getBlockchain().set_catch_up(connection.getServer());
+							interface1.setMode("catch_up");
+							next_height = bh + 1;
+							interface1.getBlockchain().set_catch_up(interface1.getServer());
 						}
 					}
 				}
 				notify("updated");
 			}
 		}
-		else if("catch_up".equals(connection.getMode())){
-			Blockchain can_connect = connection.getBlockchain().can_connect(header);
-			if(can_connect != null) {
-				connection.getBlockchain().save_header(header);
-				if(height < connection.getTip()) {
+		else if("catch_up".equals(interface1.getMode())){
+			boolean can_connect = interface1.getBlockchain().can_connect(header,true);
+			if(can_connect) {
+				interface1.getBlockchain().save_header(header);
+				if(height < interface1.getTip()) {
 					next_height = height + 1;
 				}
 				else {
@@ -557,48 +572,49 @@ public class Network extends Thread implements INetwork{
 			else {
 				//go back
 				System.out.println("cannot connect " + height);
-				connection.setMode("backward");
-				connection.setBad(height);
-				connection.setBad_header(header);
+				interface1.setMode("backward");
+				interface1.setBad(height);
+				interface1.setBad_header(header);
 				next_height =height - 1;
 			}
 			if(next_height == 0) {
 				// exit catch_up state
-				System.out.println("catch up done "+ connection.getBlockchain().height());
-				connection.getBlockchain().set_catch_up(null);
+				System.out.println("catch up done "+ interface1.getBlockchain().height());
+				interface1.getBlockchain().set_catch_up(null);
 				switch_lagging_interface();
 				notify("updated");
 			}
 		}
 		else {
 			try {
-				throw new Exception("Exception "+connection.getMode());
+				throw new Exception("Exception "+interface1.getMode());
 			}catch(Exception e) {
 				e.printStackTrace();
 			}
 		}
-		System.out.println("next height "+next_height);
+		
 		//If not finished, get the next header
 		if(next_height != 0){
-			if(connection.getMode().equals("catch_up") && connection.getTip() > next_height + 50)
-				request_chunk(connection, new Integer(next_height / 2016));
+			if(interface1.getMode().equals("catch_up") && interface1.getTip() > next_height + 50) {
+				request_chunk(interface1, next_height / 2016);
+			}
 			else {
-				request_header(connection, new Integer(next_height));
+				
+				request_header(interface1, next_height);
 			}
 		}
 		else {
-			connection.setMode("default");
-			connection.setRequest(null);
+			interface1.setMode("default");
+			interface1.setRequest(0);
 			notify("updated");
 		}
 		//refresh network dialog
 		notify("interfaces");
 	}
-	private void request_chunk(TcpConnection connection, Integer idx) {
-		System.out.println("requesting chunk " + idx);
-		queue_request("blockchain.block.get_chunk", new Integer[] {idx}, connection);
+	private void request_chunk(Interface connection, int idx) {
+		queue_request("blockchain.block.get_chunk", new Integer[] {new Integer(idx)}, connection);
 		connection.setRequest(idx);
-		connection.setRequestTime(date.getTime());
+		connection.setRequest_time(date.getTime());
 	}
 	private void notify(String key) throws JSONException {
 		if("status".equals(key) || "updated".equals(key)) {
@@ -639,28 +655,30 @@ public class Network extends Thread implements INetwork{
 	private Set get_interfaces() {
 		return interfaces.keySet();
 	}
-	public void on_notify_header(TcpConnection tcpConnection ,JSONObject header) throws JSONException, IOException {
+	public void on_notify_header(Interface interface1 ,JSONObject header) throws JSONException, IOException {
 		int height = header.optInt("block_height");
 		if( height == 0)
 			return;
-		tcpConnection.setTip_header(header);
-		tcpConnection.setTip(height);
+		interface1.setTip_header(header);
+		interface1.setTip(height);
 		
-		if(!"default".equals(tcpConnection.getMode())){
+		if(!"default".equals(interface1.getMode())){
 			return;
 		}
-		Blockchain b = BlockchainsUtil.check_header(blockchains,header);
 		
+		Blockchain b = BlockchainsUtil.check_header(header);
 		if(b != null) {
-			tcpConnection.setBlockchain(b);
+			interface1.setBlockchain(b);
 			switch_lagging_interface();
 			notify("updated");
 			notify("interfaces");
 			return;
 		}
-		b = BlockchainsUtil.can_connect(blockchains,header);
+		b = BlockchainsUtil.can_connect(header);
+		
+		
 		if(b != null) {
-			tcpConnection.setBlockchain(b);
+			interface1.setBlockchain(b);
 			b.save_header(header);
 			switch_lagging_interface();
 			notify("updated");
@@ -668,27 +686,27 @@ public class Network extends Thread implements INetwork{
 			return;
 		}
 		Object[] obj =blockchains.values().toArray();
-		int max = Integer.MAX_VALUE;
+		int tip = Integer.MIN_VALUE;
 		for(int i=0;i<obj.length;i++) {
 			int tmp = ((Blockchain)obj[i]).height(); 
-			if(max > tmp) {
-				max = tmp;
+			if(tip < tmp) {
+				tip = tmp;
 			}
 		}
-		int tip = max;
 		if(tip >=0) {
-			tcpConnection.setMode("backward");
-			tcpConnection.setBad(height);
-			tcpConnection.setBad_header(header);
-			request_header(tcpConnection, new Integer(Math.min(tip, new Integer(height - 1).intValue())));
+			interface1.setMode("backward");
+			interface1.setBad(height);
+			interface1.setBad_header(header);
+			request_header(interface1, Math.min(tip, height - 1));
 		}
 		else {
 			Blockchain chain = (Blockchain) blockchains.get(new Integer(0));
+			System.out.println("catch up "+chain.get_catch_up());
 			if(chain.get_catch_up() == null) {
-				chain.set_catch_up(tcpConnection); 
-				tcpConnection.setMode("catch_up");
-				tcpConnection.setBlockchain(chain);
-				request_header(tcpConnection, new Integer(0));
+				chain.set_catch_up(interface1); 
+				interface1.setMode("catch_up");
+				interface1.setBlockchain(chain);
+				request_header(interface1, 0);
 			}
 		}
 	}
@@ -709,14 +727,14 @@ public class Network extends Thread implements INetwork{
 		return blockchain().height();
 	}
 	private int get_server_height() {
-		if(tcpConnection != null)
-			return tcpConnection.getTip();
+		if(interface1 != null)
+			return interface1.getTip();
 		else 
 			return 0;
 	}
 	public Blockchain blockchain() {
-		if(tcpConnection !=null && tcpConnection.getBlockchain() != null) {
-			blockchain_index = tcpConnection.getBlockchain().get_checkpoint();
+		if(interface1 !=null && interface1.getBlockchain() != null) {
+			blockchain_index = interface1.getBlockchain().get_checkpoint();
 		}
 		return (Blockchain)blockchains.get(blockchain_index);
 	}
@@ -724,11 +742,12 @@ public class Network extends Thread implements INetwork{
 		if(server_is_lagging()) {
 			//switch to one that has the correct header (not height)
 			JSONObject header = blockchain().read_header(get_local_height());
+			System.out.println("header "+header);
 			Iterator keys = interfaces.keySet().iterator();
 			Set filtered = new HashSet();
 			while (keys.hasNext()) {
 				String key = (String) keys.next();
-				TcpConnection i = (TcpConnection)interfaces.get(key);
+				Interface i = (Interface)interfaces.get(key);
 				if(i.getTip_header().equals(header)) {
 					filtered.add(key);
 				}	
@@ -742,12 +761,15 @@ public class Network extends Thread implements INetwork{
 	}
 
 	private void connection_down(Server server) throws JSONException {
-		disconnectedServer.add(server);
+		disconnected_server.add(server);
 		if(server.equals(default_server)) {
 			setStatus("disconnected");
+			this.interface1 = null;
 		}
 		if(interfaces.containsKey(server)) {
-			close_interface((TcpConnection)interfaces.get(server));
+			//close_interface((Interface)interfaces.get(server));
+			interfaces.remove(server);
+			System.out.println("removed "+server.toString());
 			notify("interfaces");
 		}
 		Iterator it = blockchains.values().iterator();
@@ -759,18 +781,18 @@ public class Network extends Thread implements INetwork{
 		}
 	}
 
-	private void close_interface(TcpConnection tcpConnection) {
-		if(tcpConnection != null) {
-			if(interfaces.containsKey(tcpConnection.getServer())) {
-				interfaces.remove(tcpConnection.getServer());
+/*	private void close_interface(Interface interface1) {
+		System.out.println("hayyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
+		if(interface1 != null) {
+			interfaces.remove(interface1.getServer());
+			if(interface1.getServer().equals(default_server)) {
+				this.interface1 = null;
 			}
-			if(tcpConnection.getServer().equals(default_server)) {
-				this.tcpConnection = null;
-			}
-			tcpConnection.close();
+			//interface1.close();
+			System.out.println("interface is close "+interface1.getServer().toString());
 		}
 
-	}
+	}*/
 
 	public String get_index(String method,Object[] params) {
 		//   """ hashable index for subscriptions and cache"""
@@ -781,26 +803,54 @@ public class Network extends Thread implements INetwork{
 			return method+":"+params[0].toString();
 		}
 	}
+	
+	private void maintain_requests() throws JSONException {
+		Iterator it = interfaces.values().iterator();
+		while (it.hasNext()) {
+			Interface interface1 = (Interface) it.next();
+			if(interface1.getRequest() != 0 && (date.getTime() - interface1.getRequest_time()) > 20) {
+				System.out.println("blockchain request timed out");
+				connection_down(interface1.getServer());
+			}
+		}
+	}
 
 	private void maintainSockets() throws JSONException {
 		while(!socketQueue.isEmpty()) {
 			ServerSocketTuple tuple = (ServerSocketTuple)socketQueue.remove();
-			if(tuple.getServer() != null)
-				connecting.remove(tuple.getServer());
+			Server server = tuple.getServer();
+			TcpConnection socket = tuple.getSocket();
+			if(connecting.contains(server))
+				connecting.remove(server);
+			
 			if(tuple.getSocket() != null) {
-				new_interface(tuple);
+				new_interface(server,socket);
 			}
 			else {
-				connection_down(tuple.getServer());
+				System.out.println("socket is null");
+				connection_down(server);
 			}
 		}
 		Iterator it = interfaces.values().iterator();
 		while (it.hasNext()) {
-			TcpConnection type = (TcpConnection) it.next();
+			Interface type = (Interface) it.next();
+			if(type.has_timed_out()) {
+				System.out.println("times out");
+				connection_down(type.getServer());
+			}
 			if(type.ping_required()) {
 				queue_request("server.version", new String[] {Version.PACKAGE_VERSION,Version.PROTOCOL_VERSION}, type);
 			}
-
+		}
+		
+		long now = date.getTime();
+		if((interfaces.size() + connecting.size()) < num_servers) {
+            start_random_interface();
+            if(now - nodes_retry_time > NODES_RETRY_INTERVAL) {
+                System.out.println("network: retrying connections");
+                disconnected_server = new HashSet();
+                nodes_retry_time = now;
+            }
 		}
 		if(tcpConnection == null) {
 			if(!"connecting".equals(connection_status)) {
@@ -884,17 +934,17 @@ public class Network extends Thread implements INetwork{
 		Files.write(recent_servers, "recent-servers");
 	}
 
-	private void new_interface(ServerSocketTuple tuple) throws JSONException {
-		TcpConnection connection = tuple.getSocket();
-		Server server = tuple.getServer();
+	private void new_interface(Server server, TcpConnection socket) throws JSONException {
 		add_recent_server(server.toString());
-		connection.setTip(0);
-		connection.setBlockchain(null);
-		connection.setMode("default");
-		connection.setTip_header(null);
-		connection.setRequest(new Integer(0));
-		interfaces.put(server, connection);
-		queue_request("blockchain.headers.subscribe",new String[] {} , connection);
+		Interface interface1 = new Interface(server, socket);
+		interface1.setTip(0);
+		interface1.setBlockchain(null);
+		interface1.setMode("default");
+		interface1.setTip_header(null);
+		interface1.setRequest(0);
+		interface1.setServer(server);
+		interfaces.put(server, interface1);
+		queue_request("blockchain.headers.subscribe",new String[] {} , interface1);
 		if(server.equals(default_server)) {
 			switch_to_interface(server);
 		}
@@ -903,13 +953,13 @@ public class Network extends Thread implements INetwork{
 	private void switch_to_interface(Server server) throws JSONException {
 		default_server = server;
 		if(!interfaces.containsKey(server)) {
-			tcpConnection = null;
+			interface1 = null;
 			startInterface(server);
 			return ;
 		}
-		TcpConnection i = (TcpConnection)interfaces.get(server);
-		if(tcpConnection != i) {
-			tcpConnection = i;
+		Interface i = (Interface)interfaces.get(server);
+		if(interface1 != i) {
+			interface1 = i;
 			send_subscriptions();
 			setStatus("connected");
 			notify("updated");
@@ -917,12 +967,12 @@ public class Network extends Thread implements INetwork{
 	}
 
 	private void send_subscriptions() {
-		System.out.println("sending subscriptions to " + tcpConnection.getServer().toString() +" "+ unanswered_requests.size()  +" "+  subscribed_addresses.size());
+		System.out.println("sending subscriptions to " + interface1.getServer().toString() +" "+ unanswered_requests.size()  +" "+  subscribed_addresses.size());
 		sub_cache.clear();
 		Object[] requests = unanswered_requests.values().toArray();
 		unanswered_requests = new HashMap();
-		if(tcpConnection.ping_required()) {
-			queue_request("server.version", new String[]{Version.PACKAGE_VERSION,Version.PROTOCOL_VERSION}, tcpConnection);
+		if(interface1.ping_required()) {
+			queue_request("server.version", new String[]{Version.PACKAGE_VERSION,Version.PROTOCOL_VERSION}, interface1);
 		}
 		for(int i=0;i<requests.length;i++) {
 			Object[] request = (Object[])requests[i];
@@ -945,23 +995,22 @@ public class Network extends Thread implements INetwork{
 		for(int i=0;i<FEE_TARGETS.length;i++)
 			queue_request("blockchain.estimatefee", new Integer[] {new Integer(i)}, null);
 	}
-	private void request_header(TcpConnection connection, Integer height) {
-		queue_request("blockchain.block.get_header", new Integer[] {height}, connection);
+	private void request_header(Interface connection, int height) {
+		
+		queue_request("blockchain.block.get_header", new Integer[] {new Integer(height)}, connection);
 		connection.setRequest(height);
-		connection.setRequestTime(date.getTime());
+		connection.setRequest_time(date.getTime());
+		
 	}
 
-	public int queue_request(String method,Object[] params,TcpConnection tcpConnection) {
+	public int queue_request(String method,Object[] params,Interface interface1) {
 		// If you want to queue a request on any interface it must go
 		// through this function so message ids are properly tracked
-		if(tcpConnection == null)
-			tcpConnection = this.tcpConnection;
-		int message_id = this.message_id;
-		this.message_id += 1;
-		tcpConnection.queue_request(method, params, message_id);
-		return message_id;
+		if(interface1 == null)
+			interface1 = this.interface1;
+		interface1.queue_request(method, params, message_id);
+		return ++message_id;
 	}
-
 	public void setDownloadingHeaders(boolean b) {
 		this.downloadingHeaders = b;
 

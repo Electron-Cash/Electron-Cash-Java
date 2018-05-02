@@ -1,4 +1,4 @@
-package electrol1;
+package electrol.main;
 
 import java.io.IOException;
 import java.util.Vector;
@@ -10,6 +10,7 @@ import org.json.me.JSONObject;
 
 import electrol.java.util.Arrays;
 import electrol.java.util.HashMap;
+import electrol.java.util.Iterator;
 import electrol.java.util.Map;
 import electrol.util.BigInteger;
 import electrol.util.CharacterMultiply;
@@ -17,15 +18,16 @@ import electrol.util.Files;
 import electrol.util.StringUtils;
 
 public class BlockchainsUtil {
+	private static Map blockchains;
 	
-	public static final BigInteger MAX_BITS = new BigInteger("1d00ffff");
+	public static final BigInteger MAX_BITS = new BigInteger("1d00ffff",16);
 	
 	public static BigInteger bits_to_work(BigInteger bits) {
-	    return new BigInteger("1").shiftLeft(256).divide((bits_to_target(bits).add(new BigInteger("1"))));
+	    return (BigInteger.ONE.shiftLeft(256)).divide(bits_to_target(bits).add(BigInteger.ONE));
 	}
 	public static Map read_blockchain() {
 		
-		Map blockchains = new HashMap();
+		blockchains = new HashMap();
 		blockchains.put(new Integer(0), new Blockchain(0,null));
 		
 		try {
@@ -58,19 +60,21 @@ public class BlockchainsUtil {
 	        return word.shiftLeft(8 * (size.intValue() - 3));
 	}
 	
+	
 	public static BigInteger target_to_bits(BigInteger target) {
 		if(target.equals(new BigInteger("0")))
 	        return new BigInteger("0");
-	    
-	    target = target.min(bits_to_target(MAX_BITS));
-	    int size = (target.bitCount() + 7) / 8;
+		
+		target = target.min(bits_to_target(MAX_BITS));
+		int size = (target.bitLength() + 7) / 8;
 	    BigInteger mask64 = new BigInteger("ffffffffffffffff",16);
 	    BigInteger compact;
 	    if(size <= 3) {
 	        compact = target.and(mask64).shiftLeft(8 * (3 - size));
 	    }
 	    else {
-	        compact = target.shiftRight(8 * (size - 3)).and(mask64);
+	    	BigInteger bi = target.shiftRight(8 * (size - 3));
+	        compact = bi.and(mask64);
 	    }
 	    if(!compact.and(new BigInteger("00800000",16)).equals(new BigInteger("0"))) {
 	        compact = compact.shiftRight(8);
@@ -78,7 +82,7 @@ public class BlockchainsUtil {
 	    }
 	    //assert compact.equals(compact.and(new BigInteger("007fffff",16)));
 	    //assert size < 256;
-	    return compact.or(new BigInteger(String.valueOf(size))).shiftLeft(24);
+	    return compact.or(new BigInteger(String.valueOf(size)).shiftLeft(24));
 	}
 	
 	public static String serializeHeader(JSONObject res) throws NumberFormatException, JSONException {
@@ -156,31 +160,36 @@ public class BlockchainsUtil {
 		return output;
 	}
 
-	public static Blockchain check_header(Map blockchains,JSONObject header) throws JSONException {
+	public static Blockchain check_header(JSONObject header) throws JSONException {
 		if(header.length() == 0) {
 			return null;
 		}
-		Object[] arr = blockchains.values().toArray();
-		for(int i=0;i<arr.length;i++) {
-			Blockchain blockchain = (Blockchain)arr[i];
-			if(blockchain.check_header(header))
+		System.out.println("blockchain size "+blockchains.size());
+		Iterator it = blockchains.values().iterator();
+		while(it.hasNext()) {
+			Blockchain blockchain = (Blockchain)it.next();
+			if(blockchain.check_header(header)) {
 				return blockchain;
+			}
 		}
 		// TODO Auto-generated method stub
 		return null;
 	}
-	public static Blockchain can_connect(Map blockchains,JSONObject header) throws JSONException {
+	public static Blockchain can_connect(JSONObject header) throws JSONException {
 		if(header.length() == 0) {
 			return null;
 		}
-		Object[] arr = blockchains.values().toArray();
-		for(int i=0;i<arr.length;i++) {
-			Blockchain blockchain = (Blockchain)arr[i];
-			if(blockchain.can_connect(header, true))
+		Iterator it = blockchains.values().iterator();
+		while(it.hasNext()) {
+			Blockchain blockchain = (Blockchain)it.next();
+			if(blockchain.can_connect(header, true)) {
 				return blockchain;
+			}
 		}
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	
 	
 }
