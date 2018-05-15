@@ -3,12 +3,15 @@ package main;
 
 
 import java.math.BigInteger;
+import java.util.Random;
 
 import electrol.java.util.HashMap;
 import electrol.java.util.HashSet;
 import electrol.java.util.Iterator;
 import electrol.java.util.Map;
 import electrol.java.util.Set;
+import electrol.util.StringUtils;
+import electrol.util.Utils;
 
 public class Coinchooser {
 
@@ -29,6 +32,7 @@ public class Coinchooser {
 		set.add(txin);
 		set.add(txin1);
 		set.add(txin2);
+		
 		
 	}
 	
@@ -98,24 +102,93 @@ public class Coinchooser {
 	private Set change_amounts(Transaction transaction, int size) {
 		Object[] in = transaction.getInputs().toArray();
 		
-		Set spendBucket = new HashSet();
 		Object[] out = transaction.getOutputs().toArray();
-		BigInteger tmp = BigInteger.ZERO;
+		
+		int max = Integer.MIN_VALUE;
+		
 		for(int j=0; j < size;j++) {
-			tmp = tmp.add(((TxOut)out[j]).getAmount());
+			if(max < ((TxOut)out[j]).getAmount().intValue()){
+				max = ((TxOut)out[j]).getAmount().intValue();
+				
+			}
+		}
+		double max_change = Math.max(max * 1.25, 0.02 * 100000000);
+		
+		
+		int[] zeros = new int[size];
+		BigInteger output_value = BigInteger.ZERO;
+		for(int j=0; j < size;j++) {
+			BigInteger o = ((TxOut)out[j]).getAmount();
+			zeros[j] = trailing_zeroes(o.toString());
+			output_value = output_value.add(((TxOut)out[j]).getAmount());
+		
 		}
 		
-		for(int i=1;i<=in.length;i++) {
-			TxIn txin = (TxIn)in[i-1];
-			if(tmp.compareTo(txin.getAmount())>0) {
-				int fee = 178 * i + 78;
-				tmp = tmp.add(new BigInteger(String.valueOf(fee)));
-				spendBucket.add(txin.getAmount().subtract(tmp));
-				return spendBucket;
-			}		
+		int max_zero = Integer.MIN_VALUE;
+		int min_zero = Integer.MAX_VALUE;
+		for(int i=0;i<zeros.length;i++) {
+			if(zeros[i] > max_zero) {
+				max_zero = zeros[i];
+			}
+			if(zeros[i] < min_zero) {
+				min_zero = zeros[i];
+			}
 		}
 		
-		return spendBucket;
+		int length = Math.max(0, min_zero - 1) - ((max_zero + 1) + 1);
+		
+		BigInteger input_value = BigInteger.ZERO;
+		for(int j=0; j < size;j++) {
+			input_value = input_value.add(((TxIn)in[j]).getAmount());
+		}
+		
+		int change_amount = 0;
+		BigInteger fee = input_value.subtract(output_value);
+		int n = 1;
+		for(n = 1;n<size +1 ;n++) {
+			 change_amount = Math.max(0, fee.intValue() - (180*n+78));
+			 if(change_amount / n <= max_change) {
+			      break;
+			 }
+		}
+		int remaining = change_amount;
+		Set amounts = new HashSet();
+		
+		
+		while(n > 1) {
+			int average = remaining / n;
+			int amount = randint((int)(average * 0.7), (int)(average * 1.3));
+			remaining -= amount;
+			amounts.add(new BigInteger(String.valueOf(amount)));
+			n -= 1;
+		}
+		
+		int N = 10;
+		for(int i =0 ;i<Math.min(2, Math.max(0, min_zero - 1));i++) {
+			N = N * N;
+		}
+		int amount = (remaining / N) * N;
+		amounts.add(new BigInteger(String.valueOf(amount)));
+		
+		
+		return amounts;
+	}
+	
+	int trailing_zeroes(String val) {
+        int s = val.length();
+        int count =0;
+        for(int i=0;i<val.length();i++) {
+        	if(val.charAt(s-i-1) == '0') {
+        		count ++;
+        		continue;
+        	}
+        	break;
+        }
+        return count;
+	}
+
+	private int randint(int i, int j) {
+		return i+new Random().nextInt(j-i);
 	}
 
 	public Set bucket(Set coins, BigInteger amount) {
