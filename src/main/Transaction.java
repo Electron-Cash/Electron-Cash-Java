@@ -2,6 +2,15 @@ package main;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
+import java.security.InvalidKeyException;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.Security;
+import java.security.Signature;
+import java.security.SignatureException;
+import java.security.spec.InvalidKeySpecException;
 
 import org.bouncycastle.asn1.ASN1Integer;
 import org.bouncycastle.asn1.DERSequenceGenerator;
@@ -12,18 +21,52 @@ import org.bouncycastle.crypto.params.ECDomainParameters;
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.signers.ECDSASigner;
 import org.bouncycastle.crypto.signers.HMacDSAKCalculator;
+import org.bouncycastle.jce.ECNamedCurveTable;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
+import org.bouncycastle.jce.spec.ECPrivateKeySpec;
+import org.json.me.JSONObject;
 
-import electrol.util.BigInteger;
+import electrol.java.util.HashSet;
+import electrol.java.util.Map;
+import electrol.java.util.Set;
 
 public class Transaction {
 
+	private static final String EC_GEN_PARAM_SPEC = "secp256k1";
+	private static final String KEY_PAIR_GEN_ALGORITHM = "ECDSA";
 	private static final String SIGHASHFORKID = "41";
 
-	public Transaction()
+	static final X9ECParameters curve = SECNamedCurves.getByName("secp256k1");
+	static final ECDomainParameters domain = new ECDomainParameters(curve.getCurve(), curve.getG(), curve.getN(),
+			curve.getH(), curve.getSeed());
 
+	private String raw;
+	
+	public Transaction(String raw)
 	{
+		this();
+		this.raw = raw;
 	}
-
+	public Transaction() {
+		
+	}
+	public Transaction(Map map) {
+		this((String)map.get("hex"));
+	}
+	public String getRaw() {
+		return raw;
+	}
+	public JSONObject deserialize() {
+		return new JSONObject();
+	}
+	
+	public static Transaction from_io(Set input, Set output) {
+		Transaction transaction = new Transaction();
+		transaction.setInputs(input);
+		transaction.setOutputs(output);
+		return transaction;
+	}
 	public static String push_data(String data) {
 
 		int OP_PUSHDATA1 = 76;
@@ -47,14 +90,14 @@ public class Transaction {
 
 	}
 
-	/*public static byte[] signData(byte[] data, PrivateKey key) throws Exception {
+	public static byte[] signData(byte[] data, PrivateKey key) throws Exception {
 		Signature signer = Signature.getInstance("SHA256withDSA");
 		signer.initSign(key);
 		signer.update(data);
 		return (signer.sign());
-	}*/
+	}
 
-	 
+
 
 	public static String serializePreimage(int i, BigInteger localBlockHeight, int prevout_n, TxIn[] txins,
 			TxOut[] txouts) {
@@ -135,6 +178,10 @@ public class Transaction {
 		return retval;
 	}
 
+	public static int estimated_input_size(TxIn txin) {
+		return serializeInput(txin).length() / 2;
+	}
+	
 	public static String op_push(int i) {
 		if (i < 76) {
 			return Integer.toHexString(i);
@@ -251,7 +298,7 @@ public class Transaction {
 		return retval;
 	}
 
-	/*public static PrivateKey getPrivateKeyObjectfromString(String mykey) {
+	public static PrivateKey getPrivateKeyObjectfromString(String mykey) {
 
 		// Bouncy Castle used to provide Crypto Libraries
 		Security.addProvider(new BouncyCastleProvider());
@@ -281,11 +328,9 @@ public class Transaction {
 		return privKey;
 
 	}
-*/
+
 	public static String GetSignature(String privkey, byte[] myhash) {
-		X9ECParameters curve = SECNamedCurves.getByName("secp256k1");
-		ECDomainParameters domain = new ECDomainParameters(curve.getCurve(), curve.getG(), curve.getN(),
-				curve.getH(), curve.getSeed());
+
 		ECDSASigner signer = new ECDSASigner(new HMacDSAKCalculator(new SHA256Digest()));
 		signer.init(true, new ECPrivateKeyParameters(new BigInteger(privkey, 16), domain));
 		BigInteger[] signature = signer.generateSignature(myhash);
@@ -303,7 +348,6 @@ public class Transaction {
 	}
 
 	private static BigInteger toCanonicalS(BigInteger s) {
-		X9ECParameters curve = SECNamedCurves.getByName("secp256k1");
 		if (s.compareTo(curve.getN().shiftRight(1)) <= 0) {
 			return s;
 		} else {
@@ -311,80 +355,27 @@ public class Transaction {
 		}
 	}
 
-	public static TxOut[] getOutputs() {
+	static Set txout = new HashSet();
+	static Set txin = new HashSet();
+	//TxOut
+	public static Set getOutputs() {
 
-		// THIS SHOULD GET CALLED FROM WALLET LAYER WITH SOME PARAMETERS.
-
-		int numberOfOutputs = 2;
-		TxOut[] outputs = new TxOut[numberOfOutputs];
-
-		// TEST CASE 1 already spent
-		// BigInteger sats1= new BigInteger("2200");
-		// BigInteger sats2= new BigInteger("97570");
-		// TxOut txout1= new TxOut("1FTF9bQhmpohLxoxMSmKS6unHuCYcEXhFs", sats1);
-		// TxOut txout2 = new TxOut("1DrwN9uB6kM3pGgGGAcfT6vsPY36PUoeZk",sats2 );
-
-		// TEST CASE 2
-		BigInteger sats1 = new BigInteger("98000");
-		BigInteger sats2 = new BigInteger("1000");
-		TxOut txout1 = new TxOut("1AAxA3cp8NSrXSCMHcwVMdXD1juqVSqjG3", sats1);
-
-		TxOut txout2 = new TxOut("1ECiyNygHMUCxGNn38jcP3AU4KrCPtaRNt", sats2);
-
-		outputs[1] = txout1;
-		outputs[0] = txout2;
-
-		return outputs;
-
+		return txout;
 	}
 
-	public static TxIn[] getInputs() {
+	public void setOutputs(Set ztxout) {
+		txout = ztxout;
+	}
+	
+	public static Set getInputs() {
 
-		// THIS SHOULD GET CALLED FROM WALLET LAYER WITH SOME PARAMETERS.
-
-		int numberOfInputs = 3;
-		TxIn[] inputs = new TxIn[numberOfInputs];
-
-		// TEST CASE 1, already spent.
-		// BigInteger bi_100k= new BigInteger("100000");
-		// WalletAddress nativeAddress1= new
-		// WalletAddress("1M5G5DjEBDQNKuTYpszm2Y8n3VQ3HQrP2v",0,false,"0274377e8344603ba58bd2efa3a30cb8fa37337f491d0b4659413063c5780be817");
-		// TxIn TxIn1 = new
-		// TxIn(nativeAddress1,"e4c977a93c18c5cab67c6c21ab133bba3f294e6d42ebf6bab3ef56a951d92d6b",0,bi_100k);
-
-		// TEST CASE 2
-		BigInteger input1 = new BigInteger("2200");
-
-		BigInteger input2 = new BigInteger("3300");
-
-		BigInteger input3 = new BigInteger("94040");
-
-		WalletAddress nativeAddress1 = new WalletAddress("1FTF9bQhmpohLxoxMSmKS6unHuCYcEXhFs", 1, false,
-				"023b0bc0f6528116896c2b7a2282cdca960fd24b534f59399c68bd883021b1186d");
-
-		WalletAddress nativeAddress2 = new WalletAddress("1PaaGaj6GqsY83NUQMm89iA1YZmyigHxf7", 2, false,
-				"028a2686e8518596f803f8ffa433bc7617c3b7a8fa7de2b0bbfcf473495763cba5");
-
-		WalletAddress nativeAddress3 = new WalletAddress("1HxFqPcJAW2HLy4pHxuNfaoHgrXB1tmfb4", 1, true,
-				"03a06326dd1faea6b7734c5baace8f62579053cf050722e37dc7184371900ce781");
-		TxIn TxIn1 = new TxIn(nativeAddress1, "418a355444d4cee97e98d2250ef3763873f916529a07937606fb4bbb8cc8c288", 0,
-				input1);
-
-		TxIn TxIn2 = new TxIn(nativeAddress2, "7ddf1b8c2fbba194e9259e037e4f360fab1eb10333a14795911fa8a0c806fe39", 0,
-				input2);
-
-		TxIn TxIn3 = new TxIn(nativeAddress3, "7ddf1b8c2fbba194e9259e037e4f360fab1eb10333a14795911fa8a0c806fe39", 1,
-				input3);
-
-		inputs[0] = TxIn1;
-
-		inputs[1] = TxIn2;
-
-		inputs[2] = TxIn3;
-		return inputs;
-
+		return txin;
 	}
 
+	public void setInputs(Set ztxin) {
+		txin = ztxin;
+	}
+	
 	public static TxIn[] Sign(TxIn[] inputs, TxOut[] outputs) {
 
 		int i;
@@ -412,16 +403,18 @@ public class Transaction {
 		return inputs;
 
 	}
+
 	public static String Generate()
 
 	{
-
 		// This is the main wrapper function for this class.
 
 		// Get the data we need -- Inputs and Outputs
-		TxIn[] inputs = getInputs();
-		TxOut[] outputs = getOutputs();
+		Object[] in = getInputs().toArray();
+		Object[] out = getOutputs().toArray();
 
+		TxIn[] inputs = new TxIn[in.length];
+		TxOut[] outputs = new TxOut[out.length];
 		// Sign the inputs
 		inputs = Sign(inputs, outputs);
 
