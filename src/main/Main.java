@@ -12,17 +12,17 @@ import org.bouncycastle.jce.spec.ECParameterSpec;
 import org.bouncycastle.jce.spec.ECPrivateKeySpec;
 import org.bouncycastle.jce.spec.ECPublicKeySpec;
 import org.bouncycastle.math.ec.ECPoint;
- 
-import java.security.KeyFactory; 
-import java.security.NoSuchAlgorithmException; 
-import java.security.PrivateKey; 
-import java.security.PublicKey; 
+
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.Security;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.Arrays;
-import org.bouncycastle.jce.provider.BouncyCastleProvider; 
-  
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
 public class Main {
 
 	private static final String EC_GEN_PARAM_SPEC = "secp256k1";
@@ -190,7 +190,12 @@ public class Main {
 
 		String rawTx=Transaction.Generate();
 		System.out.println("rawTx is"+rawTx);
-		 
+
+    System.out.println("______________WALLETS_________________");
+    System.out.println("______________________________________");
+
+    Wallet testWallet = new Wallet();
+    System.out.println("Wallet type is " + testWallet.walletType);
 		// MULTITHREAD
 		// Runner runner1= new Runner();
 

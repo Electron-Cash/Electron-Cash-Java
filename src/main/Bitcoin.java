@@ -1,10 +1,10 @@
-package main;
+	package main;
 
 import java.io.*;
 
 import java.math.BigInteger;
-import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.InvalidKeyException;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
@@ -16,6 +16,9 @@ import org.bouncycastle.jce.spec.ECParameterSpec;
 import org.bouncycastle.jce.spec.ECPublicKeySpec;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.jce.interfaces.ECPublicKey;
+import org.bouncycastle.crypto.Digest;
+import org.bouncycastle.crypto.digests.RIPEMD160Digest;
+import org.bouncycastle.crypto.util.PublicKeyFactory;
 import java.security.KeyFactory;
 import java.security.Security;
 import java.security.MessageDigest;
@@ -314,7 +317,7 @@ public class Bitcoin {
 		try {
 			digest = MessageDigest.getInstance("SHA-256");
 		} catch (NoSuchAlgorithmException e) {
-			System.out.println("NO SUCH ALGORITHM EXCEPTION");
+			System.out.println("NO SUCH ALGORITHM EXCEPTION 4");
 			System.exit(0);
 		}
 
@@ -333,14 +336,16 @@ public class Bitcoin {
 		// This method will peform a RIPEMD160 Hash of the SHA256 Hash.
 		String out = null;
 		MessageDigest digest = null;
-		MessageDigest digest2 = null;
+		// MessageDigest digest2 = null;
+		Digest digest2 = null;
 		byte[] xBytes = null;
 
 		try {
 			digest = MessageDigest.getInstance("SHA-256");
-			digest2 = MessageDigest.getInstance("RIPEMD160");
+			// digest2 = MessageDigest.getInstance("RIPEMD160");
+			digest2 = new RIPEMD160Digest();
 		} catch (NoSuchAlgorithmException e) {
-			System.out.println("NO SUCH ALGORITHM EXCEPTION");
+			System.out.println("NO SUCH ALGORITHM EXCEPTION 5");
 			System.exit(0);
 		}
 
@@ -348,8 +353,11 @@ public class Bitcoin {
 		// --- Hash sha256
 		xBytes = digest.digest(xBytes);
 		// ripemd160
-		xBytes = digest2.digest(xBytes);
-		out = Util.bytesToHex(xBytes);
+		// xBytes = digest2.digest(xBytes);
+		digest2.update(xBytes, 0, xBytes.length);
+		byte[] res = new byte[20];
+		digest2.doFinal(res,0);
+		out = Util.bytesToHex(res);
 		return out;
 	}
 
@@ -549,14 +557,15 @@ public class Bitcoin {
 		KeyFactory keyFactory = null;
 		try {
 			keyFactory = KeyFactory.getInstance(KEY_PAIR_GEN_ALGORITHM);
+			// keyFactory = KeyFactory.getInstance("ECDSA");
 		} catch (NoSuchAlgorithmException e) {
-			System.out.println("NO SUCH ALGORITHM EXCEPTION");
+			System.out.println("NO SUCH ALGORITHM EXCEPTION 1");
 			System.exit(0);
 		}
 		try {
 			publicKey = keyFactory.generatePublic(publicKeySpec);
 		} catch (InvalidKeySpecException e) {
-			System.out.println("INVALID KEY SPEC EXCEPTION");
+			System.out.println("INVALID KEY SPEC EXCEPTION 2");
 			System.exit(0);
 		}
 		ECPublicKey ecPublicKey = (ECPublicKey) publicKey;
@@ -588,7 +597,7 @@ public class Bitcoin {
 		try {
 			keyFactory = KeyFactory.getInstance(KEY_PAIR_GEN_ALGORITHM);
 		} catch (NoSuchAlgorithmException e) {
-			System.out.println("NO SUCH ALGORITHM EXCEPTION");
+			System.out.println("NO SUCH ALGORITHM EXCEPTION 3");
 			System.exit(0);
 		}
 		try {

@@ -1,7 +1,7 @@
 package main;
- 
 
-import java.math.BigInteger; 
+
+import java.math.BigInteger;
 
 public class Util {
 
@@ -131,7 +131,18 @@ public class Util {
 		return b;
 	}
 
+  // public static int readInt32(int cursor, String hex){
+  //   int result = Integer.parseInt(reverseByteString(hex.substring(0, 2*4)),16);
+  //   cursor += 2*4;
+  //   return result;
+  // }
+
+  // public static int getCompactSize(String hex){
+  //   int prefix = hex.substring(0,2).parseInt(16);
+  //   return
+  //   // switch(prefix){
+  //   //
+  //   // }
+  //   //
+  // }
 } // end class
-		 
- 
- 
