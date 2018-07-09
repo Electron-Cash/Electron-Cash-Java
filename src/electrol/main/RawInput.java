@@ -1,0 +1,93 @@
+package electrol.main;
+
+import electrol.util.BigInteger;
+
+public final class RawInput {
+	private String txHash;
+	private int txIndex;
+	private long scriptSize = 0;
+	private String script = "";
+	private int sequence = -1;
+
+	public String getTxHash() {
+		return txHash;
+	}
+
+	public void setTxHash(String txHash) {
+		this.txHash = txHash;
+	}
+
+	public int getTxIndex() {
+		return txIndex;
+	}
+
+	public void setTxIndex(int txIndex) {
+		this.txIndex = txIndex;
+	}
+
+	public long getScriptSize() {
+		return scriptSize;
+	}
+
+	public void setScriptSize(long scriptSize) {
+		this.scriptSize = scriptSize;
+	}
+
+	public String getScript() {
+		return script;
+	}
+
+	public void setScript(String script) {
+		this.script = script;
+	}
+
+	public int getSequence() {
+		return sequence;
+	}
+
+	public void setSequence(int sequence) {
+		this.sequence = sequence;
+	}
+
+	public String toString() {
+		return "RawInput [txHash=" + txHash + ", txIndex=" + txIndex + ", scriptSize=" + scriptSize + ", script="
+				+ script + ", sequence=" + sequence + "]";
+	}
+
+	public static RawInput parse(String txData) {
+		RawInput input = new RawInput();
+		byte[] rawTx = ByteUtilities.toByteArray(txData);
+		int buffPointer = 0;
+
+		byte[] hashBytes = ByteUtilities.readBytes(rawTx, buffPointer, 32);
+		buffPointer += 32;
+		hashBytes = ByteUtilities.flipEndian(hashBytes);
+		input.setTxHash(ByteUtilities.toHexString(hashBytes));
+
+		byte[] indexBytes = ByteUtilities.readBytes(rawTx, buffPointer, 4);
+		buffPointer += 4;
+		indexBytes = ByteUtilities.flipEndian(indexBytes);
+		input.setTxIndex(new BigInteger(1, indexBytes).intValue());
+
+		electrol.main.Deserialize.VariableInt varScriptSize = Deserialize.readVariableInt(rawTx, buffPointer);
+		buffPointer += varScriptSize.getSize();
+		input.setScriptSize(varScriptSize.getValue());
+
+		byte[] scriptBytes = ByteUtilities.readBytes(rawTx, buffPointer, (int) input.getScriptSize());
+		buffPointer += input.getScriptSize();
+		input.setScript(ByteUtilities.toHexString(scriptBytes));
+
+		byte[] sequenceBytes = ByteUtilities.readBytes(rawTx, buffPointer, 4);
+		buffPointer += 4;
+		sequenceBytes = ByteUtilities.flipEndian(sequenceBytes);
+		input.setSequence(new BigInteger(1, sequenceBytes).intValue());
+
+		return input;
+	}
+
+	public long getDataSize() {
+		int sizeSize = Deserialize.writeVariableInt(getScriptSize()).length;
+		return 32 + 4 + sizeSize + getScriptSize() + 4;
+	}
+
+}
