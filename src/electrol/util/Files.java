@@ -13,7 +13,7 @@ import javax.microedition.io.file.FileConnection;
 import javax.microedition.io.file.FileSystemRegistry;
 
 public class Files {
-	public static final String path = ".electron-cash/";
+	public static final String path = "electron-cash/";
 	
 	public static String getDefaultPath() throws IOException{
 		String appPath = "file:///"+getDefaultRoot()+path;
