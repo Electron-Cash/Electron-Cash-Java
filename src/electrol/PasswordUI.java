@@ -39,7 +39,7 @@ public class PasswordUI extends Form implements CommandListener{
 		addCommand(set);
 		setCommandListener(this);
 	}
-	public PasswordUI(Electron electron, Network network) {
+	public PasswordUI(Electron electron) {
 		super("Enter Password");
 		this.electron = electron;
 		display = Display.getDisplay(electron);
@@ -86,16 +86,18 @@ public class PasswordUI extends Form implements CommandListener{
 	private boolean setStorageInfo(String password) {
 		try {
 			
-			//TODO- Remove this
-			
 			Storage storage = new Storage(Constants.STORAGE_PATH, password);
 			if(seed != null && seed.length() > 0) {
 				storage.put("seed", seed);
 				storage.write();
 			}
 			SplashScreen splashScreen = new SplashScreen(electron, storage);
+		
 			display.setCurrent(splashScreen);
+			System.out.println(display.getCurrent().isShown());
 			electron.setStorage(storage);
+			Thread t = new Thread(splashScreen);
+			t.start();
 			electron.start();
 			
 			return true;

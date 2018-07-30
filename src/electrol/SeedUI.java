@@ -10,7 +10,6 @@ import javax.microedition.lcdui.Form;
 import javax.microedition.lcdui.TextField;
 import javax.microedition.midlet.MIDletStateChangeException;
 
-import electrol.main.Network;
 import electrol.main.Seed;
 
 public class SeedUI extends Form implements CommandListener{
@@ -22,8 +21,7 @@ public class SeedUI extends Form implements CommandListener{
 	private TextField textField= new TextField("Enter Seed", "", 1000, TextField.ANY);
 	private Electron electron;
 	private Display display;
-	private Network network;
-	public SeedUI(Electron electron, Network network) {
+	public SeedUI(Electron electron) {
 		super("Electron -> Seed Options");
 		this.electron = electron;
 		this.display = Display.getDisplay(electron);
@@ -42,7 +40,6 @@ public class SeedUI extends Form implements CommandListener{
 			textField.setPreferredSize(100, 100);
 			if(textField.getString() != null && textField.getString().length() != 0) {
 				String seed = textField.getString();
-				seed = "fix glare garden safe ill speed stool table oblige admit barrel acid";
 				display.setCurrent(new PasswordUI(electron,seed));
 			}
 			else {

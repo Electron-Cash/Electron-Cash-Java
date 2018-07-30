@@ -245,7 +245,6 @@ public class Blockchain {
 		//END OF NOV-2017 DAA
 		
 		if(height%2016 == 0) {
-			System.out.println("in height ");
 			return get_new_bits(height);
 		}
 		

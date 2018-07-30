@@ -56,7 +56,7 @@ public class Network extends Thread{
 		queue_request("server.version", new String[] {"3.1.5","1.1"});
 	}
 
-	public void run() {
+	public void initHeaderFile() {
 		try {
 			NetworkUtil.init_header_file(this, (Blockchain)(blockchains.get(new Integer(0))));
 			while(isDownloadingHeaders()) {
@@ -67,6 +67,10 @@ public class Network extends Thread{
 		}catch(InterruptedException e) {
 
 		}
+	}
+	
+	public void run() {
+		
 		while(true) {
 			try {
 				waitOnSockets();

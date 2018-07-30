@@ -68,6 +68,7 @@ public class Electron extends MIDlet implements CommandListener{
 			context.setTcpConnection(tcp);
 
 			network = new Network(context,storage);
+			network.initHeaderFile();
 			network.start();
 			
 		}catch(Exception e) {
@@ -157,11 +158,11 @@ public class Electron extends MIDlet implements CommandListener{
 	protected void startApp() throws MIDletStateChangeException {
 		boolean isExist = Files.isExist(Constants.STORAGE_PATH);
 		if(isExist) {
-			PasswordUI passwordUI = new PasswordUI(this, network);
+			PasswordUI passwordUI = new PasswordUI(this);
 			display.setCurrent(passwordUI);
 		}
 		else {
-			SeedUI seedUI = new SeedUI(this, network);
+			SeedUI seedUI = new SeedUI(this);
 			display.setCurrent(seedUI);
 		}
 	}

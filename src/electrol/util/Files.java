@@ -84,8 +84,10 @@ public class Files {
 	}
 	
 	public static void write(byte[] data, String path) {
+		
 		try {
 			FileConnection con = (FileConnection) Connector.open(getDefaultPath()+path, Connector.READ_WRITE);
+			
 			if(con.exists()) {
 				con.delete();
 			}

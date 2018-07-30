@@ -17,8 +17,6 @@ public class SplashScreen extends Form implements Runnable{
 		this.electron = electron;
 		this.stringItem = new StringItem("Synching wallet with blockchain.  This can take a few minutes, please wait...", "");
 		append(stringItem);
-		Thread t = new Thread(this);
-		t.start();
 	}
 
 	public void run() {
