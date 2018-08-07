@@ -10,14 +10,12 @@ import org.json.me.JSONObject;
 
 public class BitcoinMainnet {
 	
-	public static final String HEADERS_URL="bitcoincash.com";
 	public static final boolean TESTNET = false;
 	public static final int WIF_PREFIX = 0x80;
 	public static final int ADDRTYPE_P2PKH = 0;
 	public static final int ADDRTYPE_P2SH = 5;
 	public static final String SEGWIT_HRP = "bc";
 	public static final String GENESIS = "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f";
-	public static final String HEADERS_PATH ="/files/blockchain_headers";
 	public static final int BITCOIN_CASH_FORK_BLOCK_HEIGHT = 478559;
 	public static final String BITCOIN_CASH_FORK_BLOCK_HASH = "000000000000000000651ef99cb9fcbe0dadde1d424bd9f15ff20136191a5eec";
 	

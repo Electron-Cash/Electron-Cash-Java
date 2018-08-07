@@ -35,8 +35,8 @@ public class Network extends Thread{
 	private Config config;
 	private String responseString = "";
 	public Network(ApplicationContext context, Storage storage){
-		this.context = context;
 		this.storage = storage;
+		this.context = context;
 		this.config = context.getConfig();
 		scripthashMap = new HashMap();
 		hashes = new HashSet();
@@ -54,19 +54,6 @@ public class Network extends Thread{
 
 		queue_request("blockchain.headers.subscribe",new String[] {});
 		queue_request("server.version", new String[] {"3.1.5","1.1"});
-	}
-
-	public void initHeaderFile() {
-		try {
-			NetworkUtil.init_header_file(this, (Blockchain)(blockchains.get(new Integer(0))));
-			while(isDownloadingHeaders()) {
-				Thread.sleep(1000);
-			}
-		} catch (JSONException e1) {
-			e1.printStackTrace();
-		}catch(InterruptedException e) {
-
-		}
 	}
 	
 	public void run() {

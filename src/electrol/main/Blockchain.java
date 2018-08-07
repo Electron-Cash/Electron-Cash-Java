@@ -264,7 +264,7 @@ public class Blockchain {
 		return BlockchainsUtil.target_to_bits(target);
 	}
 	public String getPath() {
-		String fileName = "blockchain_headers";
+		String fileName = "blockchain";
 		if(parent_id == null) {
 			return fileName;
 		}

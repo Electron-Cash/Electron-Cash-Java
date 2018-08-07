@@ -13,8 +13,6 @@ import javax.microedition.lcdui.TextField;
 import javax.microedition.midlet.MIDletStateChangeException;
 
 import org.bouncycastle.crypto.InvalidCipherTextException;
-
-import electrol.main.Network;
 import electrol.main.Storage;
 import electrol.util.Constants;
 
@@ -59,9 +57,9 @@ public class PasswordUI extends Form implements CommandListener{
 				sendErrorAlert("Password and Confirm password are not equals.");
 			}
 			//TODO - Add more password validation
-			
-			setStorageInfo(passwordText);
-			
+			else {
+				setStorageInfo(passwordText);
+			}
 		}
 		if(cmd.equals(ok)) {
 		
@@ -87,17 +85,15 @@ public class PasswordUI extends Form implements CommandListener{
 		try {
 			
 			Storage storage = new Storage(Constants.STORAGE_PATH, password);
+			//SplashScreen splashScreen = new SplashScreen(electron, storage);
+			//display.setCurrent(splashScreen);
 			if(seed != null && seed.length() > 0) {
 				storage.put("seed", seed);
 				storage.write();
 			}
-			SplashScreen splashScreen = new SplashScreen(electron, storage);
-		
-			display.setCurrent(splashScreen);
-			System.out.println(display.getCurrent().isShown());
 			electron.setStorage(storage);
-			Thread t = new Thread(splashScreen);
-			t.start();
+			//Thread t = new Thread(splashScreen);
+			//t.start();
 			electron.start();
 			
 			return true;

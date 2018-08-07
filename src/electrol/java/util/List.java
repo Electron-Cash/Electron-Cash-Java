@@ -26,7 +26,4 @@ public interface List
 
     Object set(int index, Object element)
         throws RuntimeException, ClassCastException, IllegalArgumentException, IndexOutOfBoundsException;
-
-    List subList(int fromIndex, int toIndex)
-        throws IndexOutOfBoundsException;
 }

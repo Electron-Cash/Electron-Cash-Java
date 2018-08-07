@@ -20,9 +20,7 @@
 package net.wstech2.me.httpsclient;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.Date;
@@ -30,8 +28,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import javax.microedition.io.Connector;
-import javax.microedition.io.file.FileConnection;
 import javax.microedition.rms.InvalidRecordIDException;
 import javax.microedition.rms.RecordStoreException;
 import javax.microedition.rms.RecordStoreNotOpenException;
@@ -103,56 +99,7 @@ public class CertificateValidatorUtils {
 
 	public static String SERVER_AUTHENTICATION_KEY_USAGE_OID = "1.3.6.1.5.5.7.3.1";
 
-	/**
-	 * 
-	 * Prints common certificate informations like signature, signature
-	 * algorithm, subject and issuer details, etc.
-	 * 
-	 * @param cert
-	 *            The X509CertificateStructure containing the information that
-	 *            will be printed.
-	 * 
-	 */
 	
-	public static void printCertificateDetails(
-			org.bouncycastle.asn1.x509.Certificate cert) {
-		
-		HttpsConnectionUtils.logDebug("BEGIN CERTIFICATE DUMP FOR:[["
-				+ CertificateValidatorUtils.extractCommonName(cert, true)
-				+ "]]");
-
-		HttpsConnectionUtils.logDebug("Certificate Signature:[["
-				+ cert.getSignature().toString() + "]]");
-
-		HttpsConnectionUtils.logDebug("Certificate Signature Algorithm OID:[["
-				+ cert.getSignatureAlgorithm().getAlgorithm() + "]]");
-
-		HttpsConnectionUtils.logDebug("Certificate Subject Info:[["
-				+ cert.getSubject().toString() + "]]");
-
-		HttpsConnectionUtils.logDebug("Certificate Subject common name (CN):[["
-				+ extractCommonName(cert, false) + "]]");
-		HttpsConnectionUtils
-				.logDebug("Certificate Subject short common name (CN):[["
-						+ extractCommonName(cert, true) + "]]");
-
-		HttpsConnectionUtils.logDebug("Certificate Issuer Info:[["
-				+ cert.getIssuer() + "]]");
-
-		HttpsConnectionUtils.logDebug("Certificate Start Date:[["
-				+ cert.getStartDate().getTime() + "]]");
-
-		HttpsConnectionUtils.logDebug("Certificate End Date:[["
-				+ cert.getEndDate().getTime() + "]]");
-
-		HttpsConnectionUtils.logDebug("Certificate ASN.1 Dump:[["
-				+ ASN1Dump.dumpAsString(cert, true) + "]]");
-
-		HttpsConnectionUtils.logDebug("END CERTIFICATE DUMP FOR:[["
-				+ CertificateValidatorUtils.extractCommonName(cert, true)
-				+ "]]");
-	}
-
 	/**
 	 * 
 	 * Inspected and display various informations from the Certificate passed as
@@ -485,7 +432,6 @@ public class CertificateValidatorUtils {
 		//HttpsConnectionUtils.printSep();
 		HttpsConnectionUtils.logDebug("Certificate Chain[[\n"
 				+ HttpsConnectionUtils.replace(certInfos.toString(), "}", "}\n") + "]]\n");
-		HttpsConnectionUtils.printSep();
 		return certInfos;
 	}
 	
@@ -676,8 +622,6 @@ public class CertificateValidatorUtils {
 			String fullCN, String friendlyCN)
 			throws RecordStoreNotOpenException, InvalidRecordIDException,
 			RecordStoreException, IOException {
-		System.out.println(fullCN);
-		System.out.println(friendlyCN);
 		Certificate cert = null;
 		byte[] certBA = loadJarResource("/" + fullCN + ".der");
 		if (certBA == null) {
@@ -715,8 +659,8 @@ public class CertificateValidatorUtils {
 	 * @throws IOException
 	 */
 	public static byte[] loadJarResource(String filename) throws IOException {
-		System.out.println(filename);
-		InputStream is = CertificateValidatorUtils.class.getResourceAsStream(filename);
+		
+		/*InputStream is = CertificateValidatorUtils.class.getResourceAsStream(filename);
 		if(is == null) {
 			FileConnection fc = (FileConnection) Connector.open("file:///root1"+filename, Connector.READ_WRITE);
 			if(!fc.exists()) {
@@ -734,7 +678,8 @@ public class CertificateValidatorUtils {
 		while ((b = is.read()) != -1) {
 			file.write(b);
 		}
-		return file.toByteArray();
+		return file.toByteArray();*/
+		return null;
 	}
 
 	public static boolean isAlgIdEqual(AlgorithmIdentifier id1,

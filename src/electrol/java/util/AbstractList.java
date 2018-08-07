@@ -154,19 +154,6 @@ public abstract class AbstractList
         return new AbstractListListIterator(this, index);
     }
 
-    public List subList(int fromIndex, int toIndex)
-        throws IndexOutOfBoundsException, IllegalArgumentException
-    {
-        if (fromIndex < 0 || toIndex > size())
-        {
-            throw new IndexOutOfBoundsException();
-        }
-        if (fromIndex > toIndex)
-        {
-            throw new IllegalArgumentException();
-        }
-        return (List)new Sublist(this, fromIndex, toIndex);
-    }
 
     public boolean equals(Object o)
     {

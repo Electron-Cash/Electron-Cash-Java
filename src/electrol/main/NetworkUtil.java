@@ -1,5 +1,6 @@
 package electrol.main;
 
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.Enumeration;
 
@@ -10,11 +11,11 @@ import org.json.me.JSONObject;
 import electrol.java.util.ArrayList;
 import electrol.java.util.List;
 import electrol.java.util.Set;
-import electrol.util.BitcoinHeadersDownload;
 import electrol.util.BitcoinMainnet;
 import electrol.util.Files;
 import electrol.util.Server;
 import electrol.util.StringUtils;
+import net.wstech2.me.httpsclient.HttpsConnectionImpl;
 
 import java.util.Random;
 
@@ -80,16 +81,17 @@ public class NetworkUtil {
 		return servers;
 	}
 	
-	public static void init_header_file(Network network, Blockchain b) throws JSONException {
+	public static void init_header_file(Blockchain b) throws JSONException, IOException {
 		if(b.get_hash(0).equals(BitcoinMainnet.GENESIS)) {
-			network.setDownloadingHeaders(false);
 			return;
 		}
-
 		String filename = b.getPath();
-		network.setDownloadingHeaders(true);
-		BitcoinHeadersDownload download = new BitcoinHeadersDownload(filename, network);
-		download.start();
+		HttpsConnectionImpl connection = new HttpsConnectionImpl("bitcoincash.com",443,"/files/blockchain_headers");
+		connection.setAllowUntrustedCertificates(true);
+		DataInputStream inputStream = connection.openDataInputStream();
+		Files.download(inputStream, filename);
+		inputStream.close();
+		connection.close();
 	}
 	
 	public static Server pick_random_server(JSONObject default_servers, String protocol, Set exclude, String default_protocol) throws JSONException {

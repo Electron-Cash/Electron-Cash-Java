@@ -10,20 +10,26 @@ import javax.microedition.lcdui.List;
 import javax.microedition.midlet.MIDlet;
 import javax.microedition.midlet.MIDletStateChangeException;
 
+import org.bouncycastle.util.Arrays;
 import org.json.me.JSONArray;
 import org.json.me.JSONException;
 import org.json.me.JSONObject;
 
+import electrol.java.util.Map;
 import electrol.main.AddressUtil;
 import electrol.main.ApplicationContext;
+import electrol.main.Bitcoin;
+import electrol.main.Blockchain;
+import electrol.main.BlockchainsUtil;
 import electrol.main.Config;
-import electrol.main.Main;
+import electrol.main.MasterKeys;
 import electrol.main.Network;
 import electrol.main.NetworkUtil;
 import electrol.main.Storage;
 import electrol.main.TcpConnection;
 import electrol.util.Constants;
 import electrol.util.Files;
+import electrol.util.Util;
 
 
 
@@ -57,22 +63,22 @@ public class Electron extends MIDlet implements CommandListener{
 		context.setLatestBlock(false);	
 
 		Config config = new Config();
-		ApplicationContext context = new ApplicationContext();
 		context.setDefaultServer("165.227.202.193:50002:s");
 		context.setConfig(config);
 		try {
 			checkOrGenerateAddress();
-			
+			Map blockchains = BlockchainsUtil.read_blockchain();
+			System.out.println("starting download");
+			NetworkUtil.init_header_file((Blockchain)(blockchains.get(new Integer(0))));
+			alert("check or generate address");
+			/*
 			TcpConnection tcp = new TcpConnection(NetworkUtil.deserialize_server(context.getDefaultServer()));
-
 			context.setTcpConnection(tcp);
-
 			network = new Network(context,storage);
-			network.initHeaderFile();
-			network.start();
+			network.start();*/
 			
 		}catch(Exception e) {
-			e.printStackTrace();
+			alert(e.getMessage());
 		}		
 	}
 
@@ -80,14 +86,24 @@ public class Electron extends MIDlet implements CommandListener{
 
 	
 
-	public void checkOrGenerateAddress() throws JSONException {
+	public void checkOrGenerateAddress() throws JSONException, Exception {
 		JSONObject jsonObject = storage.get("keystore", new JSONObject());
 		if(jsonObject.length() == 0) {
-			Main main = new Main();
-			String keys[] = main.getKeys(storage.get("seed", ""));
-			jsonObject.put("xprv", keys[0]);
-			jsonObject.put("xpub", keys[1]);
-			storage.put("keystore", jsonObject);
+			String seed = storage.get("seed", "");
+			MasterKeys masterKeys = new MasterKeys();
+			byte[] bip32root = masterKeys.get_seed_from_mnemonic(seed);
+			byte[] root512 = Bitcoin.get_root512_from_bip32root(bip32root);
+
+			byte[] kBytes = Arrays.copyOfRange(root512, 0, 32);
+			byte[] cBytes = Arrays.copyOfRange(root512, 32, 64);
+			String jonaldPubKey = Bitcoin.get_pubkey_from_secret(kBytes);
+			String serializedXprv = Bitcoin.serializeXprv(cBytes, kBytes);
+			byte[] cKbytes = Util.hexStringToByteArray(jonaldPubKey);
+			String serializedXpub = Bitcoin.serializeXpub(cBytes, cKbytes);
+			String final_xprv = Bitcoin.base_encode_58(serializedXprv);
+			String final_xpub = Bitcoin.base_encode_58(serializedXpub);
+			jsonObject.put("xprv", final_xprv);
+			jsonObject.put("xpub", final_xpub);
 		}
 		JSONObject addresses = storage.get("addresses", new JSONObject());
 		JSONObject addr_history = storage.get("addr_history", new JSONObject());

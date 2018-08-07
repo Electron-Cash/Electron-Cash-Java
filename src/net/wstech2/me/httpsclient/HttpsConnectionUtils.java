@@ -399,13 +399,6 @@ public class HttpsConnectionUtils {
 		System.out.flush();
 	}
 	
-	/**
-	 * Prints a log message separator. 
-	 */
-	public static void printSep(){
-		System.out.println("++--------------------------------------------------------------------------------------------------------------++");
-	}
-	
 	public static String replace(String text, String from, String to){
 		
 		String retval = text;

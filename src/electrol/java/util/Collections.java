@@ -351,11 +351,6 @@ public class Collections
                 }
             };
         }
-
-        public List subList(int fromIndex, int toIndex)
-        {
-            return new UnmodifiableList(list.subList(fromIndex, toIndex));
-        }
     }
 
     public static Enumeration enumeration(final Collection c)

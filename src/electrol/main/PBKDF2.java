@@ -2,7 +2,6 @@
 // SOURCE: https://github.com/pinae/ctSESAM-android/blob/master/app/src/main/java/de/pinyto/ctSESAM/PBKDF2.java
 
 package electrol.main;
-import java.nio.ByteBuffer;
 import org.bouncycastle.crypto.CipherParameters;
 import org.bouncycastle.crypto.Digest;
 import org.bouncycastle.crypto.Mac;
@@ -11,6 +10,8 @@ import org.bouncycastle.crypto.digests.SHA384Digest;
 import org.bouncycastle.crypto.digests.SHA512Digest;
 import org.bouncycastle.crypto.macs.HMac;
 import org.bouncycastle.crypto.params.KeyParameter;
+
+import electrol.java.neo.ByteBuffer;
 
 /**
  * This class creates PBKDF2 with sha256.
@@ -98,6 +99,7 @@ public class PBKDF2 {
 				if (i-1+k < dk.length) {
 					dk[i-1+k] = T[k];
 				}
+				System.gc();
 			}
 		}
 		return dk;

@@ -1,8 +1,8 @@
-MIDlet-Version: 1.0.0
-MIDlet-Vendor: MIDlet Suite Vendor
+MIDlet-Version: 0.1
+MIDlet-Vendor: Electron 
 MIDlet-Jar-URL: Electron.jar
 MicroEdition-Configuration: CLDC-1.1
 MicroEdition-Profile: MIDP-2.1
-MIDlet-Permissions: javax.microedition.io.Connector.http,javax.microedition.io.Connector.socket,javax.microedition.io.Connector.ssl,javax.microedition.io.Connector.file.write,javax.microedition.io.Connector.file.read,javax.microedition.io.Connector.https
-MIDlet-1: MIDlet-1,,electrol.Electron
+MIDlet-Permissions: javax.microedition.io.Connector.socket,javax.microedition.io.Connector.file.write,javax.microedition.io.Connector.file.read
+MIDlet-1: EntryPoint,,electrol.Electron
 MIDlet-Name: Electron MIDlet Suite

@@ -19,6 +19,7 @@
 package net.wstech2.me.httpsclient;
 
 import java.io.DataInputStream;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,7 +28,6 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.microedition.io.Connector;
-import javax.microedition.io.HttpsConnection;
 import javax.microedition.io.SecurityInfo;
 import javax.microedition.io.SocketConnection;
 
@@ -46,7 +46,7 @@ import org.bouncycastle.crypto.tls.TlsClientProtocol;
  * {@link #isAllowUntrustedCertificates()} and {@link #getCertificate()}.
  * 
  */
-public class HttpsConnectionImpl implements HttpsConnection {
+public class HttpsConnectionImpl {
 
 	final private static int DEFAULT_HTTPS_PORT = 443;
 	final private static int CONN_STATE_SETUP = 1;
@@ -79,33 +79,11 @@ public class HttpsConnectionImpl implements HttpsConnection {
 	private boolean allowUntrustedCertificates = false;
 	private Certificate certificate = null;
 	private int timeout;
-	/**
-	 * Creates an httpsConnectionImpl instance to handle an https connection. The
-	 * following default values are assigned to the Port and Path attributes: <BR>
-	 * port: 443 <BR>
-	 * path: "/"
-	 * 
-	 * @param host
-	 *            Server hostname.
-	 */
-	public HttpsConnectionImpl(String host) {
-		this(host, DEFAULT_HTTPS_PORT);
-	}
 
-	/**
-	 * Creates an httpsConnectionImpl instance to handle an https connection. The
-	 * following default value is assigned to the Path attribute: <BR>
-	 * path: "/"
-	 * 
-	 * @param host
-	 *            Server hostname.
-	 * @param port
-	 *            Server TCP port.
-	 */
 	public HttpsConnectionImpl(String host, int port) {
-		this(host, port, "/");
+		this.host = host;
+		this.port = port;
 	}
-
 	/**
 	 * Creates an httpsConnectionImpl instance to handle an https connection. The
 	 * following default value is assigned to the Path attribute:
@@ -117,7 +95,7 @@ public class HttpsConnectionImpl implements HttpsConnection {
 	 * @param path
 	 *            URL Path.
 	 */
-	public HttpsConnectionImpl(String host, int port, String path) {
+	public HttpsConnectionImpl(String host,int port, String path) {
 		this.host = host;
 		this.port = port;
 		this.path = path;
